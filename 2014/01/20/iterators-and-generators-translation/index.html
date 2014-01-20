@@ -75,8 +75,8 @@
       <a href="https://plus.google.com//u/0/102193487255973478115?rel=author" title="Damon Zhao" target="_blank" itemprop="author">Damon Zhao</a>
     </p>
   <p class="article-time">
-    <time datetime="2014-01-20T09:03:54.000Z" itemprop="datePublished">1月 20 2014</time>
-    更新日期:<time datetime="2014-01-20T09:03:54.000Z" itemprop="dateModified">1月 20 2014</time>
+    <time datetime="2014-01-20T09:28:57.000Z" itemprop="datePublished">1月 20 2014</time>
+    更新日期:<time datetime="2014-01-20T09:28:56.000Z" itemprop="dateModified">1月 20 2014</time>
     
   </p>
 </header>
@@ -435,18 +435,18 @@
 <h2 id="-">生成器表达式</h2>
 <p><a href="https://developer.mozilla.org/en/JavaScript/Guide/Predefined_Core_Objects#Array_comprehensions" target="_blank">数组推导式</a>的一个明显缺点是，它们会导致整个数组在内存中构造。当输入到推导式的本身是个小数组时它的开销是微不足道的--但是，当输入数组很大或者创建一个新的昂贵(或者是无限的)数组生成器时就可能出现问题。</p>
 <p>生成器允许对序列延迟计算(lazy computation)，在需要时按需计算元素。生成器表达式在句法上几乎和数组推导式相同--它用圆括号来代替方括号(而且用 <code>for...in</code> 代替 <code>for each...in</code>)--但是它创建一个生成器而不是数组，这样就可以延迟计算。你可以把它想象成创建生成器的简短语法。</p>
-<p>假设我们有一个迭代器 <code>it</code> 来迭代一个巨大的整数序列。我们需要创建一个新的迭代器来迭代双数。一个数组推导式将会在内存中创建一整个数组包含所有双数：</p>
+<p>假设我们有一个迭代器 <code>it</code> 来迭代一个巨大的整数序列。我们需要创建一个新的迭代器来迭代偶数。一个数组推导式将会在内存中创建一整个数组包含所有双数：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 </pre></td><td class="code"><pre>    <span class="keyword">var</span> doubles = [i * <span class="number">2</span> <span class="keyword">for</span> (i <span class="keyword">in</span> it)];
 </pre></td></tr></table></figure>
 
-<p>而生成器表达式将会创建一个新的迭代器，并且在需要的时候按需来计算双数值：</p>
+<p>而生成器表达式将会创建一个新的迭代器，并且在需要的时候按需来计算偶数值：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
 </pre></td><td class="code"><pre>    var it2 = (i * <span class="number">2</span> <span class="keyword">for</span> (i <span class="keyword">in</span> it));
-    print(it2.<span class="keyword">next</span>());  <span class="regexp">//</span>第一个 it 里面的双数
-    print(it2.<span class="keyword">next</span>());  <span class="regexp">//</span>第二个 it 里面的双数
+    print(it2.<span class="keyword">next</span>());  <span class="regexp">//</span>第一个 it 里面的偶数
+    print(it2.<span class="keyword">next</span>());  <span class="regexp">//</span>第二个 it 里面的偶数
 </pre></td></tr></table></figure>
 
 <p>当一个生成器被用做函数的参数，圆括号被用做函数调用，意味着最外层的圆括号可以被省略：</p>

@@ -1,0 +1,493 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>告别node-forever,拥抱PM2 | AriesDevil&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Damon Zhao">
+    
+    <meta name="description" content="原文地址:Goodbye node-forever,hello PM2
+
+devo.ps团队对JavaScript的迷恋已经不是什么秘密了;node.js作为服务器端,AngularJS作为客户端,某种程度上说,我们的堆栈是用它建成的.我们构建静态客户端和RESTful JSON API的方法意味着">
+    
+    
+    
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="https://twitter.com/se77en_cc" />
+    <meta name="twitter:title" content="告别node-forever,拥抱PM2 | AriesDevil&#39;s Blog" />
+      
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/apple.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/apple.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="AriesDevil&#39;s Blog" title="AriesDevil&#39;s Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="AriesDevil&#39;s Blog">AriesDevil&#39;s Blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li><form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:se77en.cc">
+					</form></li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2013/06/27/goodbye-node-forever-hello-pm2-translation/" title="告别node-forever,拥抱PM2" itemprop="url">告别node-forever,拥抱PM2</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="https://plus.google.com/https://plus.google.com/u/0/102193487255973478115?rel=author" title="Damon Zhao" target="_blank" itemprop="author">Damon Zhao</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2013-06-27T06:43:36.000Z" itemprop="datePublished">6月 27 2013</time>
+    更新日期:<time datetime="2014-01-20T08:36:04.000Z" itemprop="dateModified">1月 20 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#-pm2-"><span class="toc-number">1.</span> <span class="toc-text">PM2到底是什么个东西呢?</strong></span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#-"><span class="toc-number">2.</span> <span class="toc-text">原生的集群化支持</strong></span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#-termcaps-htop-linux-"><span class="toc-number">3.</span> <span class="toc-text">按照termcaps-HTOP(Linux下的系统监控与进程管理软件)的方式管理</strong></span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#-log-"><span class="toc-number">4.</span> <span class="toc-text">实时集中log处理</strong></span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#-"><span class="toc-number">5.</span> <span class="toc-text">快速恢复</strong></span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#-api-"><span class="toc-number">6.</span> <span class="toc-text">强健的API</strong></span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#-"><span class="toc-number">7.</span> <span class="toc-text">对了,还有很多特性...</strong></span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#-"><span class="toc-number"></span> <span class="toc-text">下一步计划?</strong></span></a></li></ol>
+		</div>
+		
+		<p>原文地址:<a href="http://devo.ps/blog/2013/06/26/goodbye-node-forever-hello-pm2.html" target="_blank">Goodbye node-forever,hello PM2</a></p>
+<p><img src="/img/pm22.png" alt="pm2-logo"></p>
+<p>devo.ps团队对JavaScript的迷恋已经不是什么秘密了;node.js作为服务器端,AngularJS作为客户端,某种程度上说,我们的堆栈是用它建成的.我们构建<a href="http://devo.ps/blog/2013/01/31/farewell-to-regular-web-development-approaches.html" target="_blank">静态客户端和RESTful JSON API</a>的方法意味着我们跑了很多的node.js,我必须承认尽管node.js的一切都令人敬畏,但当我们在生产环境中运行它时它仍然会让我们感到头疼.相比一些更加成熟的语言,它的工具和最佳实践仍然缺乏(试想一下:监控,日志,错误处理).</p>
+<p>到目前为止,我们仍然依赖漂亮俏皮的<a href="https://github.com/nodejitsu/forever" target="_blank">node-forever模块</a>.它是非常伟大的模块,不过依然缺失一些功能:</p>
+<ul>
+<li>有限的监控和日志功能</li>
+<li>进程管理配置的支持差</li>
+<li>不支持集群</li>
+<li>代码库老化(意味着在升级node.js时频繁的失败)</li>
+</ul>
+<p>这就是为什么我们要在过去的几个月里去写<a href="https://github.com/Unitech/pm2" target="_blank">PM2模块</a>.在我们即将发布针对生产环境的正式版之前我们想先让您看一眼.</p>
+<h3 id="-pm2-"><strong>PM2到底是什么个东西呢?</strong></h3>
+<p>首先第一件事,你需要先通过<code>npm</code>来安装它:</p>
+<pre><code>npm install -g pm2
+</code></pre><p>让我们通过表格来对比下:</p>
+<table class="table table-bordered table-striped table-condensed">
+   <tr>
+      <th width="50%">Feature</th>
+      <th width="25%">Forever</th>
+      <th width="25%">PM2</th>
+   </tr>
+   <tr>
+      <td>Keep Alive</td>
+      <td>&#10004;</td>
+      <td>&#10004;</td>
+   </tr>
+   <tr>
+      <td>Coffeescript</td>
+      <td>&#10004;</td>
+      <td>&nbsp;</td>
+   </tr>
+   <tr>
+      <td>Log aggregation</td>
+      <td>&nbsp;</td>
+      <td>&#10004;</td>
+   </tr>
+   <tr>
+      <td>API</td>
+      <td>&nbsp;</td>
+      <td>&#10004;</td>
+   </tr>
+   <tr>
+      <td>Terminal monitoring</td>
+      <td>&nbsp;</td>
+      <td>&#10004;</td>
+   </tr>
+   <tr>
+      <td>Clustering</td>
+      <td>&nbsp;</td>
+      <td>&#10004;</td>
+   </tr>
+   <tr>
+      <td>JSON configuration</td>
+      <td>&nbsp;</td>
+      <td>&#10004;</td>
+   </tr>
+</table>
+
+
+<p>现在让我来介绍一点点主要特性...</p>
+<h3 id="-"><strong>原生的集群化支持</strong></h3>
+<p>Node v0.6引入了集群特性,允许你在多个Node应用中共享socket.问题在于,它不能在容器外运行而且需要一些额外的配置来处理主进程和子进程.</p>
+<p>PM2原生支持处理这个问题,而且不需要额外的代码:PM2本身作为主进程,然后它将你的代码封装到一个特殊的集群进程里,就像node.js一样,为你的代码文件添加一些全局变量.</p>
+<p>想要启动一个使用所有CPU核心的集群,你只需要键入如下的指令:</p>
+<pre><code>$ pm2 start app.js -i max
+</code></pre><p>然后:</p>
+<pre><code>$ pm2 list
+</code></pre><p>然后就会显示类似下面的东西(ASCII UI FTW);</p>
+<p><img src="/img/pm2-list.png" alt="pm2-list"></p>
+<p>就像你看到的,现在你的应用有多少个进程就取决于你的CPU核心数了</p>
+<h3 id="-termcaps-htop-linux-"><strong>按照termcaps-HTOP(Linux下的系统监控与进程管理软件)的方式管理</strong></h3>
+<p>通过<code>pm2 list</code>命令来观察所有运行的进程以及它们的状态已经足够好了.但是怎么来追踪它们的资源消耗呢?别担心,用这个命令:</p>
+<pre><code>$ pm2 monit
+</code></pre><p>你可以得到进程(以及集群)的CPU的使用率和内存占用.</p>
+<p><img src="/img/pm2-monit.png" alt="pm2-monit"></p>
+<p><strong>声明:</strong><a href="https://github.com/arunoda/node-usage" target="_blank">node-usage</a>到目前为止还不支持MacOS(随便什么性能要求),不过它在Linux下运行良好.</p>
+<p>现在,让我们来核实一下我们的集群,还有对内存堆栈的垃圾回收,我们假设你已经有一个HTTP基准测试工具(如果没有,你一定要使用<a href="https://github.com/wg/wrk" target="_blank">WRK</a>):</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre>    $ express bufallo    <span class="comment">//Create an express app</span>
+    $ cd bufallo
+    $ npm install
+    $ pm2 start app<span class="built_in">.</span>js <span class="attribute">-i</span> <span class="keyword">max</span>
+    $ wrk <span class="attribute">-c</span> <span class="number">100</span> <span class="attribute">-d</span> <span class="number">100</span> http:<span class="comment">//localhost:3000/</span>
+</pre></td></tr></table></figure>
+
+<p>在另一个终端,运行监控选项:</p>
+<pre><code>$ pm2 monit
+</code></pre><p>耶~</p>
+<h3 id="-log-"><strong>实时集中log处理</strong></h3>
+<p>现在你不得不管理多个集群进程:一个爬取数据,一个处理数据,等等...这就意味着大量log,你可以按照老式的方法处理:</p>
+<pre><code>$ tail -f /path/to/log1 /path/to/log2 ...
+</code></pre><p>但我们想的很周到,我们增加了<code>logs</code>功能:</p>
+<pre><code>$ pm2 logs
+</code></pre><p><img src="/img/pm2-logs.png" alt="pm2-logs"></p>
+<h3 id="-"><strong>快速恢复</strong></h3>
+<p>现在事情一切顺利,你的进程嗡嗡的运行着,你需要做一次硬重启(hard restart).现在吗?是的,首先,dump掉:</p>
+<pre><code>$ pm2 dump
+</code></pre><p>然后,你可以从文件中恢复它:</p>
+<pre><code>$ pm2 kill      //让我们假设一个PM2停掉了
+$ pm2 resurect  //我所有的进程又满血满状态复活了
+</code></pre><h3 id="-api-"><strong>强健的API</strong></h3>
+<p>比方说,你想要监控所有被PM2管理的进程,而且同时还想监控运行这些进程的机器的状态(甚至希望创建一个Angular应用来调用这些API...):</p>
+<pre><code>$ pm2 web
+</code></pre><p>打开浏览器输入<a href="http://localhost:9615" target="_blank"><a href="http://localhost:9615">http://localhost:9615</a></a> ,我嘞个去!</p>
+<h3 id="-"><strong>对了,还有很多特性...</strong></h3>
+<ul>
+<li>全部测试通过,</li>
+<li>新一代的<code>update-rc.d</code>(<code>pm2 startup</code>),当然它还是alpha版,</li>
+<li>开发模式下更改文件自动重启(<code>pm2 dev</code>),也同样还是草稿,</li>
+<li>自动刷新log,</li>
+<li>快捷的通过JSON文件管理你的应用,</li>
+<li>在error log里记录未捕获的异常,</li>
+<li>记录重启的次数和时间,</li>
+<li>退出时自动杀死进程.</li>
+</ul>
+<h2 id="-"><strong>下一步计划?</strong></h2>
+<p>首先,你可以去<a href="https://github.com/Unitech/pm2" target="_blank">Github上</a>粉我们(我们喜欢stars).</p>
+<p>我们开发的PM2提供了先进完整的Node进程管理解决方案.我们希望能有更多的人来帮助我们:更多的pull requests.一些还停留在开发路线图上面的功能我们会尽快完成,下面这些就是:</p>
+<ul>
+<li>远程管理/状态校验,</li>
+<li>嵌入式跨进程通信通道(消息总线),</li>
+<li>V8垃圾回收的内存泄漏检查,</li>
+<li>Web界面,</li>
+<li>监控数据持久化,</li>
+<li>邮件通知.</li>
+</ul>
+<p>特别感谢<a href="https://github.com/makara" target="_blank">Makara Wang</a>的观点和工具,还有<a href="https://github.com/rlidwka" target="_blank">Alex Kocharin</a>提的建议和提交的代码.</p>
+<ul>
+<li>在<a href="https://twitter.com/intent/tweet?text=@devo_ps%20&amp;related=devo_ps&amp;url=http://devo.ps/blog/2013/06/26/goodbye-node-forever-hello-pm2.html" target="_blank">Twitter</a>上给我们反馈吧.</li>
+<li>欢迎在<a href="http://news.ycombinator.com/item?id=5945420" target="_blank">Hacker News</a>上和我们一起谈论</li>
+</ul>
+<p>本博客基于<a href="http://zespia.tw/hexo/zh-CN/" target="_blank">hexo</a>搭建,推荐一个不错的主题<a href="https://github.com/A-limon/pacman" target="_blank">Pacman</a>,虽然我还没用上,不过可以去<a href="http://yangjian.me" target="_blank">@A-limon</a>的主页查看效果.</p>
+<p>最后感谢<a href="http://weibo.com/436062867" target="_blank">@A-limon</a>同学提供翻译建议和审读.</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/node.js/">node.js</a><a href="/tags/PM2/">PM2</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/node.js/">node.js</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://se77en.cc/2013/06/27/goodbye-node-forever-hello-pm2-translation/" data-title="告别node-forever,拥抱PM2 | AriesDevil&#39;s Blog" data-tsina="3266027140" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2014/01/20/iterators-and-generators-translation/" title="迭代器和生成器">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  迭代器和生成器</span>
+</a>
+</div>
+
+
+</nav>
+
+	
+<section class="comment">
+	<div class="ds-thread"></div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#-pm2-"><span class="toc-number">1.</span> <span class="toc-text">PM2到底是什么个东西呢?</strong></span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#-"><span class="toc-number">2.</span> <span class="toc-text">原生的集群化支持</strong></span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#-termcaps-htop-linux-"><span class="toc-number">3.</span> <span class="toc-text">按照termcaps-HTOP(Linux下的系统监控与进程管理软件)的方式管理</strong></span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#-log-"><span class="toc-number">4.</span> <span class="toc-text">实时集中log处理</strong></span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#-"><span class="toc-number">5.</span> <span class="toc-text">快速恢复</strong></span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#-api-"><span class="toc-number">6.</span> <span class="toc-text">强健的API</strong></span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#-"><span class="toc-number">7.</span> <span class="toc-text">对了,还有很多特性...</strong></span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#-"><span class="toc-number"></span> <span class="toc-text">下一步计划?</strong></span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/javascript/" title="javascript">javascript<sup>1</sup></a></li>
+		
+			<li><a href="/categories/node.js/" title="node.js">node.js<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/PM2/" title="PM2">PM2<sup>1</sup></a></li>
+		
+			<li><a href="/tags/generator/" title="generator">generator<sup>1</sup></a></li>
+		
+			<li><a href="/tags/iterator/" title="iterator">iterator<sup>1</sup></a></li>
+		
+			<li><a href="/tags/javascript/" title="javascript">javascript<sup>1</sup></a></li>
+		
+			<li><a href="/tags/node.js/" title="node.js">node.js<sup>2</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello,I&#39;m Damon Zhao. <br/>
+			I&#39;ll share something interesting and awesome with you at this blog~</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/http://weibo.com/aries77devil" target="_blank" title="weibo"></a>
+		
+		
+		<a href="https://twitter.com/https://twitter.com/se77en_cc" target="_blank" title="twitter"></a>
+		
+		
+		<a href="https://github.com/https://github.com/se77en" target="_blank" title="github"></a>
+		
+		
+		<a href="https://www.facebook.com/https://facebook.com/se77en.cc" target="_blank" title="facebook"></a>
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://se77en.cc" target="_blank" title="Damon Zhao">Damon Zhao</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"ariesdevil"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-47298019-1', 'se77en.cc');  
+ga('send', 'pageview');
+</script>
+
+
+  </body>
+</html>

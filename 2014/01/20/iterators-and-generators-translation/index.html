@@ -75,8 +75,8 @@
       <a href="https://plus.google.com//u/0/102193487255973478115?rel=author" title="Damon Zhao" target="_blank" itemprop="author">Damon Zhao</a>
     </p>
   <p class="article-time">
-    <time datetime="2014-01-20T09:28:57.000Z" itemprop="datePublished">1月 20 2014</time>
-    更新日期:<time datetime="2014-01-20T09:28:56.000Z" itemprop="dateModified">1月 20 2014</time>
+    <time datetime="2014-01-20T12:14:04.000Z" itemprop="datePublished">1月 20 2014</time>
+    更新日期:<time datetime="2014-01-20T12:14:03.000Z" itemprop="dateModified">1月 20 2014</time>
     
   </p>
 </header>
@@ -92,8 +92,8 @@
 <p>翻译自 MDN 官方文档，原文地址：<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators?redirectlocale=en-US&amp;redirectslug=JavaScript%2FGuide%2FIterators_and_Generators" target="_blank">Iterators and Generators</a></p>
 <p>处理集合里的每一项是一个非常普通的操作，JavaScript提供了许多方法来迭代一个集合，从简单的<a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for" target="_blank">for</a>和<a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for_each...in" target="_blank">for each</a>循环到 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/map" target="_blank">map()</a>，<a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/filter" target="_blank">filter()</a> 和 <a href="https://developer.mozilla.org/en/JavaScript/Guide/Predefined_Core_Objects#Array_comprehensions" target="_blank">array comprehensions</a>(数组推导式)。在JavaScript 1.7中，迭代器和生成器在JavaScript核心语法中带来了新的迭代机制，而且还提供了定制 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for...in" target="_blank">for...in</a> 和 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for_each...in" target="_blank">for each</a> 循环行为的机制。</p>
 <h2 id="-">迭代器</h2>
-<p>一个迭代器是一个每次访问一个集合元素的对象，并跟踪该序列中迭代的当前位置。在JavaScript中一个迭代器是一个对象，这个对象提供了一个 <code>next()</code> 方法，<code>next()</code> 方法返回序列中的下一个元素。当序列中所有元素都遍历完成时，该方法抛出 <code>StopIteration</code> 异常。</p>
-<p>一个迭代器对象一旦被建立，就可以通过显式的重复调用<code>next()</code>，或者使用JavaScript的 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for...in" target="_blank">for...in</a> 和 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for_each...in" target="_blank">for each</a> 循环隐式调用来使用。</p>
+<p>迭代器是一个每次访问集合序列中一个元素的对象，并跟踪该序列中迭代的当前位置。在JavaScript中迭代器是一个对象，这个对象提供了一个 <code>next()</code> 方法，<code>next()</code> 方法返回序列中的下一个元素。当序列中所有元素都遍历完成时，该方法抛出 <code>StopIteration</code> 异常。</p>
+<p>迭代器对象一旦被建立，就可以通过显式的重复调用<code>next()</code>，或者使用JavaScript的 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for...in" target="_blank">for...in</a> 和 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for_each...in" target="_blank">for each</a> 循环隐式调用。</p>
 <p>简单的对对象和数组进行迭代的迭代器可以使用 <code>Iterator()</code> 被创建：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
@@ -110,7 +110,7 @@
     pair = it.<span class="keyword">next</span>(); <span class="regexp">//</span>一个 `<span class="constant">StopIteration</span>` 异常被抛出
 </pre></td></tr></table></figure>
 
-<p>一个 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for...in" target="_blank">for...in</a> 循环可以被用来替换显式的调用 <code>next()</code> 方法。当 <code>StopIteration</code> 异常被抛出时，循环会自动终止。</p>
+<p><a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for...in" target="_blank">for...in</a> 循环可以被用来替换显式的调用 <code>next()</code> 方法。当 <code>StopIteration</code> 异常被抛出时，循环会自动终止。</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
@@ -120,7 +120,7 @@
 </pre></td></tr></table></figure>
 
 
-<p>如果你只想迭代对象的 key 值，我们可以往 <code>Iterator()</code> 函数中传入第二个参数，值为 <code>true</code>：</p>
+<p>如果你只想迭代对象的 key 值，可以往 <code>Iterator()</code> 函数中传入第二个参数，值为 <code>true</code>：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
@@ -129,8 +129,8 @@
       print(key); <span class="comment">//每次输出 key 值</span>
 </pre></td></tr></table></figure>
 
-<p>使用 <code>Iterator()</code> 访问对象的一个好处是，被添加到 <code>Object.prototype</code> 的自定义属性不会被包含在序列中。</p>
-<p><code>Iterator()</code> 同样可以被用在数组上：</p>
+<p>使用 <code>Iterator()</code> 访问对象的一个好处是，被添加到 <code>Object.prototype</code> 的自定义属性不会被包含在序列对象中。</p>
+<p><code>Iterator()</code> 同样可以被作用在数组上：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
@@ -152,7 +152,7 @@
       print(i); <span class="comment">//输出 0，然后是 1，然后是 2</span>
 </pre></td></tr></table></figure>
 
-<p>使用 <code>let</code> 关键字可以在循环内部分别分配块变量给索引和值，还可以解构复制(Destructuring Assignment)：</p>
+<p>使用 <code>let</code> 关键字可以在循环内部分别分配索引和值给块变量，还可以解构赋值(Destructuring Assignment)：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
@@ -164,9 +164,9 @@
 </pre></td></tr></table></figure>
 
 <h2 id="-">声明自定义迭代器</h2>
-<p>一些代表项目集合的对象应该用一种指定的方式来迭代。</p>
+<p>一些代表元素集合的对象应该用一种指定的方式来迭代。</p>
 <ul>
-<li>迭代一个表示范围的对象应该一个接一个的返回这个范围包含的数字</li>
+<li>迭代一个表示范围(Range)的对象应该一个接一个的返回这个范围包含的数字</li>
 <li>一个树的叶子节点可以使用深度优先或者广度优先访问到</li>
 <li>迭代一个代表数据库查询结果的对象应该一行一行的返回，即使整个结果集尚未全部加载到一个单一数组</li>
 <li>作用在一个无限数学序列(像斐波那契序列)上的迭代器应该在不创建无限长度数据结构的前提下一个接一个的返回结果</li>
@@ -183,7 +183,7 @@
     }
 </pre></td></tr></table></figure>
 
-<p>现在我们创建一个自定义迭代器，它返回一个包含范围内所有数字的序列。迭代器接口需要我们提供一个 <code>next()</code> 方法用来返回序列中的下一个元素或者是抛出 <code>StopIteration</code> 异常。</p>
+<p>现在我们创建一个自定义迭代器，它返回一个包含范围内所有整数的序列。迭代器接口需要我们提供一个 <code>next()</code> 方法用来返回序列中的下一个元素或者是抛出 <code>StopIteration</code> 异常。</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
@@ -216,7 +216,7 @@
     };
 </pre></td></tr></table></figure>
 
-<p>勾住我们的自定义迭代器后，我们就可以迭代一个范围实例：</p>
+<p>完成我们的自定义迭代器后，我们就可以迭代一个范围实例：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
@@ -227,8 +227,8 @@
 
 <h2 id="-">生成器：一种更好的方式来构建迭代器</h2>
 <p>虽然自定义的迭代器是一种很有用的工具，但是创建它们的时候要仔细规划，因为需要显式的维护它们的内部状态。
-生成器提供了很强大的功能：它允许你定义一个包含自有迭代算法的函数，它可以自动维护自己的状态。</p>
-<p>生成器是一个特殊的函数，它作为迭代器工厂。如果一个函数包含了一个或多个 <code>yield</code> 表达式，那么就称它为生成器(译者注：Node.js 需要在函数名前加 <code>*</code> 来表示)。</p>
+生成器提供了很强大的功能：它允许你定义一个包含自有迭代算法的函数， 同时它可以自动维护自己的状态。</p>
+<p>生成器是可以作为迭代器工厂的特殊函数。如果一个函数包含了一个或多个 <code>yield</code> 表达式，那么就称它为生成器(译者注：Node.js 还需要在函数名前加 <code>*</code> 来表示)。</p>
 <blockquote>
 <p>注意：只有 HTML 中被包含在 <code>&lt;script type=&quot;application/javascript;version=1.7&quot;&gt;</code> (或者更高版本)中的代码块才可以使用 <code>yield</code> 关键字。<a href="https://developer.mozilla.org/en-US/docs/XUL" target="_blank">XUL</a> (XML User Interface Language) 脚本标签不需要指定这个特殊的代码块也可以访问这些特性。</p>
 </blockquote>
@@ -268,7 +268,7 @@
     <span class="keyword">print</span>(g.next()); <span class="comment">//抛出 StopIteration 异常</span>
 </pre></td></tr></table></figure>
 
-<p>一个生成器函数可以被一个类直接的当做 <code>__iterator__</code> 方法使用，在需要自定义迭代器的地方可以有效的减少代码量。我们使用生成器重写一下 <code>Range</code> ：</p>
+<p>生成器函数可以被一个类直接的当做 <code>__iterator__</code> 方法使用，在需要自定义迭代器的地方可以有效的减少代码量。我们使用生成器重写一下 <code>Range</code> ：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
@@ -362,8 +362,8 @@
 </pre></td></tr></table></figure>
 
 <h2 id="-">生成器高级特性</h2>
-<p>生成器可以根据需求计算yield返回值，这使得它可以表示序列昂贵的计算需求，甚至是上面所示的无限序列。</p>
-<p>除了 <code>next()</code> 方法，generator-iterator 对象还有一个 <code>send()</code> 方法，这个方法可以修改生成器的内部状态。传给 <code>send()</code> 的值将会被当做最后一个 <code>yield</code> 表达式的结果，并且会暂停生成器。在你使用 <code>send()</code> 方法传一个指定值前，你必须至少调用一次 <code>next()</code> 来启动生成器。</p>
+<p>生成器可以根据需求计算yield返回值，这使得它可以表示以前昂贵的序列计算需求，甚至是上面所示的无限序列。</p>
+<p>除了 <code>next()</code> 方法，generator-iterator 对象还有一个 <code>send()</code> 方法，该方法可以修改生成器的内部状态。传给 <code>send()</code> 的值将会被当做最后一个 <code>yield</code> 表达式的结果，并且会暂停生成器。在你使用 <code>send()</code> 方法传一个指定值前，你必须至少调用一次 <code>next()</code> 来启动生成器。</p>
 <p>下面的斐波那契生成器使用 <code>send()</code> 方法来重启序列：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
@@ -424,8 +424,8 @@
 <blockquote>
 <p>注意：有意思的一点是，调用 <code>send(undefined)</code> 和调用 <code>next()</code> 是完全同等的。不过，当调用 <code>send()</code> 方法启动一个新的生成器时，除了 <code>undefined</code> 其它的值都会抛出一个 <code>TypeError</code> 异常。</p>
 </blockquote>
-<p>你可以调用 <code>throw</code> 方法并且传递一个它应该抛出的异常值来强制生成器抛出一个异常。此异常将从当前生成器暂停上下文抛出，类似当前的 <code>yield</code> 暂停只不过换成了 <code>throw value</code> 语句。</p>
-<p>如果在抛出异常的处理过成中没有遇到 <code>yield</code> ，该异常将会被传递直到调用 <code>throw()</code> ，并且随后调用 <code>next()</code> 将会导致 <code>StopIteration</code> 异常被抛出。</p>
+<p>你可以调用 <code>throw</code> 方法并且传递一个它应该抛出的异常值来强制生成器抛出一个异常。此异常将从当前上下文抛出并暂停生成器，类似当前的 <code>yield</code> 执行，只不过换成了 <code>throw value</code> 语句。</p>
+<p>如果在抛出异常的处理过程中没有遇到 <code>yield</code> ，该异常将会被传递直到调用 <code>throw()</code> 方法，并且随后调用 <code>next()</code> 将会导致 <code>StopIteration</code> 异常被抛出。</p>
 <p>生成器拥有一个 <code>close()</code> 方法来强制生成器结束。结束一个生成器会产生如下影响：</p>
 <ol>
 <li>所有生成器中有效的 <code>finally</code> 字句将会执行</li>
@@ -435,7 +435,7 @@
 <h2 id="-">生成器表达式</h2>
 <p><a href="https://developer.mozilla.org/en/JavaScript/Guide/Predefined_Core_Objects#Array_comprehensions" target="_blank">数组推导式</a>的一个明显缺点是，它们会导致整个数组在内存中构造。当输入到推导式的本身是个小数组时它的开销是微不足道的--但是，当输入数组很大或者创建一个新的昂贵(或者是无限的)数组生成器时就可能出现问题。</p>
 <p>生成器允许对序列延迟计算(lazy computation)，在需要时按需计算元素。生成器表达式在句法上几乎和数组推导式相同--它用圆括号来代替方括号(而且用 <code>for...in</code> 代替 <code>for each...in</code>)--但是它创建一个生成器而不是数组，这样就可以延迟计算。你可以把它想象成创建生成器的简短语法。</p>
-<p>假设我们有一个迭代器 <code>it</code> 来迭代一个巨大的整数序列。我们需要创建一个新的迭代器来迭代偶数。一个数组推导式将会在内存中创建一整个数组包含所有双数：</p>
+<p>假设我们有一个迭代器 <code>it</code> 来迭代一个巨大的整数序列。我们需要创建一个新的迭代器来迭代偶数。一个数组推导式将会在内存中创建整个包含所有偶数的数组：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 </pre></td><td class="code"><pre>    <span class="keyword">var</span> doubles = [i * <span class="number">2</span> <span class="keyword">for</span> (i <span class="keyword">in</span> it)];
 </pre></td></tr></table></figure>

@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://se77en.cc/"/>
-  <updated>2014-01-22T06:03:37.594Z</updated>
+  <updated>2014-01-24T01:11:24.624Z</updated>
   <id>http://se77en.cc/</id>
   
   <author>
@@ -16,10 +16,10 @@
   
   <entry>
     <title><![CDATA[JavaScript 迭代器和生成器]]></title>
-    <link href="http://se77en.cc/2014/01/22/iterators-and-generators-translation/"/>
-    <id>http://se77en.cc/2014/01/22/iterators-and-generators-translation/</id>
-    <published>2014-01-22T06:02:38.000Z</published>
-    <updated>2014-01-22T06:02:37.000Z</updated>
+    <link href="http://se77en.cc/2014/01/20/iterators-and-generators-translation/"/>
+    <id>http://se77en.cc/2014/01/20/iterators-and-generators-translation/</id>
+    <published>2014-01-20T00:00:00.000Z</published>
+    <updated>2014-01-24T01:11:04.000Z</updated>
     <content type="html"><![CDATA[<h1 id="-">迭代器和生成器</h1>
 <p>翻译自 MDN 官方文档，原文地址：<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators?redirectlocale=en-US&amp;redirectslug=JavaScript%2FGuide%2FIterators_and_Generators" target="_blank">Iterators and Generators</a></p>
 <p>处理集合里的每一项是一个非常普通的操作，JavaScript提供了许多方法来迭代一个集合，从简单的<a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for" target="_blank">for</a>和<a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for_each...in" target="_blank">for each</a>循环到 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/map" target="_blank">map()</a>，<a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/filter" target="_blank">filter()</a> 和 <a href="https://developer.mozilla.org/en/JavaScript/Guide/Predefined_Core_Objects#Array_comprehensions" target="_blank">array comprehensions</a>(数组推导式)。在JavaScript 1.7中，迭代器和生成器在JavaScript核心语法中带来了新的迭代机制，而且还提供了定制 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for...in" target="_blank">for...in</a> 和 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for_each...in" target="_blank">for each</a> 循环行为的机制。</p>

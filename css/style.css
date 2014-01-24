@@ -642,7 +642,7 @@ header nav ul li a:hover {
   border-left: 0.5em solid #81d7d0;
 }
 #main section.post a h1 {
-  color: #ce7cd5;
+  color: #d4b68e;
   line-height: 2;
 }
 #main section.post a p {
@@ -668,7 +668,7 @@ header nav ul li a:hover {
   padding: 0.5em 1em;
 }
 #page-nav a {
-  color: #ce7cd5;
+  color: #d4b68e;
 }
 #page-nav a:hover {
   background: #ccc;
@@ -702,7 +702,7 @@ header nav ul li a:hover {
   font-weight: bold;
 }
 #page-nav .space {
-  color: #ce7cd5;
+  color: #d4b68e;
 }
 /* page layout */
 @media only screen and (min-width: 1024px) {
@@ -747,11 +747,11 @@ header nav ul li a:hover {
 }
 .archive-title h2 {
   width: 90%;
-  color: #ce7cd5;
+  color: #d4b68e;
   font-size: 120%;
 }
 .archive-title a {
-  color: #ce7cd5;
+  color: #d4b68e;
   -webkit-transition: color 0.5s;
   -moz-transition: color 0.5s;
   -o-transition: color 0.5s;
@@ -812,7 +812,7 @@ header nav ul li a:hover {
 }
 .post a,
 .page a {
-  color: #ce7cd5;
+  color: #d4b68e;
 }
 .post a:hover,
 .page a:hover {
@@ -1234,7 +1234,7 @@ footer.article-footer {
   color: #ccc;
 }
 .qrclose:hover:before {
-  color: #ce7cd5 !important;
+  color: #d4b68e !important;
 }
 .overlay {
   display: none !important;
@@ -1294,7 +1294,7 @@ footer.article-footer {
 }
 .article-tags a:hover {
   color: #fff;
-  background: #ce7cd5;
+  background: #d4b68e;
 }
 .article-categories {
   color: #d6d6d6;
@@ -1312,7 +1312,7 @@ footer.article-footer {
 }
 .article-category-link:hover {
   color: #fff !important;
-  background: #ce7cd5;
+  background: #d4b68e;
 }
 .article-nav {
   padding: 0 10%;
@@ -1331,7 +1331,7 @@ footer.article-footer {
 }
 .article-nav .prev a:hover,
 .article-nav .next a:hover {
-  background: #ce7cd5;
+  background: #d4b68e;
   color: #fff;
 }
 .article-nav .prev {
@@ -1494,7 +1494,7 @@ section.comment {
   color: #81d7d0;
 }
 .closeaside a:hover {
-  color: #ce7cd5;
+  color: #d4b68e;
 }
 .closeaside a::before {
   font-family: "FontAwesome";
@@ -1525,12 +1525,12 @@ section.comment {
 }
 .asidetitle {
   font-size: 1.1em;
-  color: #ce7cd5;
+  color: #d4b68e;
   padding: 0 0 0.3125em 0;
   border-bottom: 0.1875em solid #ccc;
 }
 .asidetitle a {
-  color: #ce7cd5;
+  color: #d4b68e;
 }
 .asidetitle a:hover {
   color: #81d7d0;
@@ -1860,7 +1860,7 @@ footer {
   }
 }
 .social-font a:hover:before {
-  color: #ce7cd5;
+  color: #d4b68e;
 }
 .social-font a[title="weibo"]::before,
 .social-font a[title="twitter"]::before,
@@ -1899,7 +1899,7 @@ footer {
   color: #fff;
 }
 .copyright a:hover {
-  color: #ce7cd5;
+  color: #d4b68e;
 }
 .article-content pre,
 .article-content .highlight {
@@ -1999,7 +1999,7 @@ footer {
   margin-top: 1em;
 }
 .article-content .gist .gist-file .gist-meta a {
-  color: #ce7cd5;
+  color: #d4b68e;
   font-weight: normal;
 }
 .article-content .gist .gist-file .gist-meta a:hover {
@@ -2062,7 +2062,7 @@ pre .javascript .function {
   color: #c9c;
 }
 .ds-highlight {
-  color: #ce7cd5 !important;
+  color: #d4b68e !important;
 }
 .ds-highlight:hover {
   color: #81d7d0 !important;

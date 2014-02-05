@@ -78,7 +78,7 @@ devo.ps团队对JavaScript的迷恋已经不是什么秘密了;node.js作为服�
     </p>
   <p class="article-time">
     <time datetime="2013-06-27T06:43:36.000Z" itemprop="datePublished">6月 27 2013</time>
-    更新日期:<time datetime="2014-01-20T08:36:04.000Z" itemprop="dateModified">1月 20 2014</time>
+    更新日期:<time datetime="2014-02-05T09:34:08.000Z" itemprop="dateModified">2月 5 2014</time>
     
   </p>
 </header>
@@ -91,7 +91,7 @@ devo.ps团队对JavaScript的迷恋已经不是什么秘密了;node.js作为服�
 		</div>
 		
 		<p>原文地址:<a href="http://devo.ps/blog/2013/06/26/goodbye-node-forever-hello-pm2.html" target="_blank">Goodbye node-forever,hello PM2</a></p>
-<p><img src="/img/pm22.png" alt="pm2-logo"></p>
+<p><img src="/img/goodbye-node-forever-hello-pm2-translation/pm22.png" alt="pm2-logo"></p>
 <p>devo.ps团队对JavaScript的迷恋已经不是什么秘密了;node.js作为服务器端,AngularJS作为客户端,某种程度上说,我们的堆栈是用它建成的.我们构建<a href="http://devo.ps/blog/2013/01/31/farewell-to-regular-web-development-approaches.html" target="_blank">静态客户端和RESTful JSON API</a>的方法意味着我们跑了很多的node.js,我必须承认尽管node.js的一切都令人敬畏,但当我们在生产环境中运行它时它仍然会让我们感到头疼.相比一些更加成熟的语言,它的工具和最佳实践仍然缺乏(试想一下:监控,日志,错误处理).</p>
 <p>到目前为止,我们仍然依赖漂亮俏皮的<a href="https://github.com/nodejitsu/forever" target="_blank">node-forever模块</a>.它是非常伟大的模块,不过依然缺失一些功能:</p>
 <ul>
@@ -158,13 +158,13 @@ devo.ps团队对JavaScript的迷恋已经不是什么秘密了;node.js作为服�
 </code></pre><p>然后:</p>
 <pre><code>$ pm2 list
 </code></pre><p>然后就会显示类似下面的东西(ASCII UI FTW);</p>
-<p><img src="/img/pm2-list.png" alt="pm2-list"></p>
+<p><img src="/img/goodbye-node-forever-hello-pm2-translation/pm2-list.png" alt="pm2-list"></p>
 <p>就像你看到的,现在你的应用有多少个进程就取决于你的CPU核心数了</p>
 <h3 id="-termcaps-htop-linux-"><strong>按照termcaps-HTOP(Linux下的系统监控与进程管理软件)的方式管理</strong></h3>
 <p>通过<code>pm2 list</code>命令来观察所有运行的进程以及它们的状态已经足够好了.但是怎么来追踪它们的资源消耗呢?别担心,用这个命令:</p>
 <pre><code>$ pm2 monit
 </code></pre><p>你可以得到进程(以及集群)的CPU的使用率和内存占用.</p>
-<p><img src="/img/pm2-monit.png" alt="pm2-monit"></p>
+<p><img src="/img/goodbye-node-forever-hello-pm2-translation/pm2-monit.png" alt="pm2-monit"></p>
 <p><strong>声明:</strong><a href="https://github.com/arunoda/node-usage" target="_blank">node-usage</a>到目前为止还不支持MacOS(随便什么性能要求),不过它在Linux下运行良好.</p>
 <p>现在,让我们来核实一下我们的集群,还有对内存堆栈的垃圾回收,我们假设你已经有一个HTTP基准测试工具(如果没有,你一定要使用<a href="https://github.com/wg/wrk" target="_blank">WRK</a>):</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
@@ -187,7 +187,7 @@ devo.ps团队对JavaScript的迷恋已经不是什么秘密了;node.js作为服�
 <pre><code>$ tail -f /path/to/log1 /path/to/log2 ...
 </code></pre><p>但我们想的很周到,我们增加了<code>logs</code>功能:</p>
 <pre><code>$ pm2 logs
-</code></pre><p><img src="/img/pm2-logs.png" alt="pm2-logs"></p>
+</code></pre><p><img src="/img/goodbye-node-forever-hello-pm2-translation/pm2-logs.png" alt="pm2-logs"></p>
 <h3 id="-"><strong>快速恢复</strong></h3>
 <p>现在事情一切顺利,你的进程嗡嗡的运行着,你需要做一次硬重启(hard restart).现在吗?是的,首先,dump掉:</p>
 <pre><code>$ pm2 dump
@@ -290,6 +290,8 @@ $ pm2 resurect  //我所有的进程又满血满状态复活了
 		
 			<li><a href="/categories/javascript/" title="javascript">javascript<sup>1</sup></a></li>
 		
+			<li><a href="/categories/koa/" title="koa">koa<sup>1</sup></a></li>
+		
 			<li><a href="/categories/node.js/" title="node.js">node.js<sup>1</sup></a></li>
 		
 		</ul>
@@ -307,9 +309,11 @@ $ pm2 resurect  //我所有的进程又满血满状态复活了
 		
 			<li><a href="/tags/iterator/" title="iterator">iterator<sup>1</sup></a></li>
 		
-			<li><a href="/tags/javascript/" title="javascript">javascript<sup>1</sup></a></li>
+			<li><a href="/tags/javascript/" title="javascript">javascript<sup>2</sup></a></li>
 		
-			<li><a href="/tags/node.js/" title="node.js">node.js<sup>2</sup></a></li>
+			<li><a href="/tags/koa/" title="koa">koa<sup>1</sup></a></li>
+		
+			<li><a href="/tags/node.js/" title="node.js">node.js<sup>3</sup></a></li>
 		
 		</ul>
 </div>
@@ -318,7 +322,7 @@ $ pm2 resurect  //我所有的进程又满血满状态复活了
   
   <div class="archiveslist">
     <p class="asidetitle"><a href="/archives">归档</a></p>
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01">一月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06">六月 2013</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02">二月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01">一月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06">六月 2013</a><span class="archive-list-count">1</span></li></ul>
   </div>
 
 

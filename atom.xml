@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://se77en.cc/"/>
-  <updated>2014-02-05T09:35:13.184Z</updated>
+  <updated>2014-02-05T09:36:33.997Z</updated>
   <id>http://se77en.cc/</id>
   
   <author>
@@ -19,9 +19,8 @@
     <link href="http://se77en.cc/2014/02/05/koa-zero-to-todo-list-translation/"/>
     <id>http://se77en.cc/2014/02/05/koa-zero-to-todo-list-translation/</id>
     <published>2014-02-05T00:00:00.000Z</published>
-    <updated>2014-02-05T09:32:10.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="-koa-todo-">使用 Koa 从零打造 TODO 应用</h1>
-<p>原文地址：<a href="http://blog.peterdecroos.com/blog/2014/02/01/koa-zero-to-todo-list/" target="_blank">Koa: Zero to Todo List</a></p>
+    <updated>2014-02-05T09:36:22.000Z</updated>
+    <content type="html"><![CDATA[<p>原文地址：<a href="http://blog.peterdecroos.com/blog/2014/02/01/koa-zero-to-todo-list/" target="_blank">Koa: Zero to Todo List</a></p>
 <blockquote>
 <h3 id="-node-0-11-x-harmony-">注意：你需要使用node 0.11.x外加 <code>-harmony</code> 来执行代码</h3>
 </blockquote>

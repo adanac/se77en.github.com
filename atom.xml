@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://se77en.cc/"/>
-  <updated>2014-02-20T06:39:13.814Z</updated>
+  <updated>2014-03-20T14:13:52.153Z</updated>
   <id>http://se77en.cc/</id>
   
   <author>
@@ -22,10 +22,10 @@
     <updated>2014-02-05T09:36:22.000Z</updated>
     <content type="html"><![CDATA[<p>原文地址：<a href="http://blog.peterdecroos.com/blog/2014/02/01/koa-zero-to-todo-list/" target="_blank">Koa: Zero to Todo List</a></p>
 <blockquote>
-<h3 id="-node-0-11-x-harmony-">注意：你需要使用node 0.11.x外加 <code>-harmony</code> 来执行代码</h3>
+<h3 id="注意：你需要使用node_0-11-x外加_<code>-harmony</code>_来执行代码">注意：你需要使用node 0.11.x外加 <code>-harmony</code> 来执行代码</h3>
 </blockquote>
 <p>Express 团队利用新的 ECMAScript 6 的生成器语法创建了新的框架，<a href="http://koajs.com/" target="_blank">Koa</a> 框架是一个全新的 node web 框架，包含了很多有意思的东西。</p>
-<h2 id="-">之前的方式</h2>
+<h2 id="之前的方式">之前的方式</h2>
 <p>在 node 标准库里，<code>http</code> 模块被用来创建服务。</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
@@ -46,7 +46,7 @@ console.log(<span class="string">'listening on port 3000'</span>);
 </pre></td></tr></table></figure>
 
 <p>Express 暴露一个方法使我们可以将 <code>http.createServer</code> 作为回调。Express 中间件是一个函数集合，每个函数包含了三个参数 <code>req</code>,<code>res</code>,<code>next</code>。中间件执行一些操作，修改请求或者返回对象然后通过调用 <code>next()</code> 来传递到堆栈里的下一个中间件。它类似一个瀑布模型，在中间件栈的底部结束响应。</p>
-<h2 id="-koa-">进入 Koa：建立在生成器机制上的框架</h2>
+<h2 id="进入_Koa：建立在生成器机制上的框架">进入 Koa：建立在生成器机制上的框架</h2>
 <p>就像 Express，Koa 也是生成一个可以被传递到 <code>http.createServer()</code> 的回调。与 Express 不同的是，它使用生成器提供一个更加细粒度的控制流程。</p>
 <p>下面是一个最基本的 Koa 应用，用来读取一个文件的内容</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
@@ -96,7 +96,7 @@ console.log(<span class="string">'now listening on port 3000'</span>);
 <p>不像 Express，Koa 中中间件使用生成器来编写。在 Koa 流中下游的中间件在返回时向上流动(回形针调用方式，具体参见：koajs.cn)。通过显式的调用 <code>yield next</code> 来执行下游中间件。当下游中间件返回时，控制流回溯到上游中间件。</p>
 <p>Express 通过不同的函数来传递 node 原生的 req 和 res，Koa 则是通过讲它们装入一个借口来管理上下文。不过它们仍然可以通过 <code>this</code> 关键字获取到，像这样：<code>this.req</code>, <code>this.res</code>。然而，在文档中直接使用原生对象是不被推荐的。可以预测到当在控制流中调用 <code>this.res.end(&#39;&#39;)</code> 时会抛出一个 monkey wrench(猴子扳手？此处不会翻译欢迎指正)。所以建议你使用 <code>this.request</code> 和 <code>this.response</code> 来代替直接调用原生对象。很多方法都起了别名指向直接用 <code>this</code> 调用，比如：<code>this.body</code> 就是 <code>this.response.body</code> 的别名。</p>
 <p>目前似乎还没有出现可以直接得到请求体的办法。co-body 分析器可以直接的解析请求体，不过文档说别这么做，Koa 是一个年轻的框架，所以别让你的手闲下来。</p>
-<h2 id="-koa-todo-">使用 Koa 做一个 TODO 应用</h2>
+<h2 id="使用_Koa_做一个_TODO_应用">使用 Koa 做一个 TODO 应用</h2>
 <p>刚才我们已经简单的进行了介绍，现在来试着做一个复杂点的。一个 TODO 应用貌似不错，为了简化，我们把 todos 存放在内存里。</p>
 <p>Koa 是一个极简的框架，它核心里并没有提供 body 解析，session 和 routing。不幸的是 Koa 太嫩了以至于还没有很多 npm 的模块是为它来写的。浏览了一下 <a href="https://github.com/koajs/koa/wiki" target="_blank">Koa 介绍页面</a>发现有一些必要的模块可以供给我们的基本 TODO 应用来使用。</p>
 <ol>
@@ -224,11 +224,11 @@ console.log(<span class="string">'listening on port 3000'</span>);
 </pre></td></tr></table></figure>
 
 <p>从 <a href="https://github.com/cultofmetatron/koa-todo" target="_blank">github</a> 上下载完整代码，github 上的版本包含了前端代码。</p>
-<h3 id="-">一些需要注意的：</h3>
+<h3 id="一些需要注意的：">一些需要注意的：</h3>
 <p><code>yield</code> 关键字可以做一些有意思的事情。如果我们向当前中间件传递一个一步函数，这个函数返回数据块或者 promise，那么它会停止执行当前中间件直到函数完成。等它返回数据块或者 promise 后，会恢复生成器执行。这样更容易阅读。</p>
-<h3 id="-">一些警告：</h3>
+<h3 id="一些警告：">一些警告：</h3>
 <p><code>yield</code> 关键字使我们可以写出一些安全的代码块，但它也不总是理想的解决办法。</p>
-<p>举个栗子，如果我们执行三个相互不依赖的异步操作，像下面这样...</p>
+<p>举个栗子，如果我们执行三个相互不依赖的异步操作，像下面这样…</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
@@ -280,12 +280,12 @@ console.log(<span class="string">'listening on port 3000'</span>);
     <id>http://se77en.cc/2014/01/20/iterators-and-generators-translation/</id>
     <published>2014-01-20T00:00:00.000Z</published>
     <updated>2014-01-24T01:11:04.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="-">迭代器和生成器</h1>
+    <content type="html"><![CDATA[<h1 id="迭代器和生成器">迭代器和生成器</h1>
 <p>翻译自 MDN 官方文档，原文地址：<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators?redirectlocale=en-US&amp;redirectslug=JavaScript%2FGuide%2FIterators_and_Generators" target="_blank">Iterators and Generators</a></p>
-<p>处理集合里的每一项是一个非常普通的操作，JavaScript提供了许多方法来迭代一个集合，从简单的<a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for" target="_blank">for</a>和<a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for_each...in" target="_blank">for each</a>循环到 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/map" target="_blank">map()</a>，<a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/filter" target="_blank">filter()</a> 和 <a href="https://developer.mozilla.org/en/JavaScript/Guide/Predefined_Core_Objects#Array_comprehensions" target="_blank">array comprehensions</a>(数组推导式)。在JavaScript 1.7中，迭代器和生成器在JavaScript核心语法中带来了新的迭代机制，而且还提供了定制 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for...in" target="_blank">for...in</a> 和 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for_each...in" target="_blank">for each</a> 循环行为的机制。</p>
-<h2 id="-">迭代器</h2>
+<p>处理集合里的每一项是一个非常普通的操作，JavaScript提供了许多方法来迭代一个集合，从简单的<a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for" target="_blank">for</a>和<a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for_each...in" target="_blank">for each</a>循环到 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/map" target="_blank">map()</a>，<a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/filter" target="_blank">filter()</a> 和 <a href="https://developer.mozilla.org/en/JavaScript/Guide/Predefined_Core_Objects#Array_comprehensions" target="_blank">array comprehensions</a>(数组推导式)。在JavaScript 1.7中，迭代器和生成器在JavaScript核心语法中带来了新的迭代机制，而且还提供了定制 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for...in" target="_blank">for…in</a> 和 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for_each...in" target="_blank">for each</a> 循环行为的机制。</p>
+<h2 id="迭代器">迭代器</h2>
 <p>迭代器是一个每次访问集合序列中一个元素的对象，并跟踪该序列中迭代的当前位置。在JavaScript中迭代器是一个对象，这个对象提供了一个 <code>next()</code> 方法，<code>next()</code> 方法返回序列中的下一个元素。当序列中所有元素都遍历完成时，该方法抛出 <code>StopIteration</code> 异常。</p>
-<p>迭代器对象一旦被建立，就可以通过显式的重复调用<code>next()</code>，或者使用JavaScript的 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for...in" target="_blank">for...in</a> 和 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for_each...in" target="_blank">for each</a> 循环隐式调用。</p>
+<p>迭代器对象一旦被建立，就可以通过显式的重复调用<code>next()</code>，或者使用JavaScript的 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for...in" target="_blank">for…in</a> 和 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for_each...in" target="_blank">for each</a> 循环隐式调用。</p>
 <p>简单的对对象和数组进行迭代的迭代器可以使用 <code>Iterator()</code> 被创建：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
@@ -302,7 +302,7 @@ console.log(<span class="string">'listening on port 3000'</span>);
     pair = it.<span class="keyword">next</span>(); <span class="regexp">//</span>一个 `<span class="constant">StopIteration</span>` 异常被抛出
 </pre></td></tr></table></figure>
 
-<p><a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for...in" target="_blank">for...in</a> 循环可以被用来替换显式的调用 <code>next()</code> 方法。当 <code>StopIteration</code> 异常被抛出时，循环会自动终止。</p>
+<p><a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for...in" target="_blank">for…in</a> 循环可以被用来替换显式的调用 <code>next()</code> 方法。当 <code>StopIteration</code> 异常被抛出时，循环会自动终止。</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
@@ -355,7 +355,7 @@ console.log(<span class="string">'listening on port 3000'</span>);
       <span class="built_in">print</span>(i + <span class="string">': '</span> + lang); <span class="regexp">//</span>输出 <span class="string">"0: JavaScript"</span> 等
 </pre></td></tr></table></figure>
 
-<h2 id="-">声明自定义迭代器</h2>
+<h2 id="声明自定义迭代器">声明自定义迭代器</h2>
 <p>一些代表元素集合的对象应该用一种指定的方式来迭代。</p>
 <ul>
 <li>迭代一个表示范围(Range)的对象应该一个接一个的返回这个范围包含的数字</li>
@@ -417,9 +417,8 @@ console.log(<span class="string">'listening on port 3000'</span>);
       <span class="built_in">print</span>(i); <span class="comment">//输出 3，然后 4，然后 5</span>
 </pre></td></tr></table></figure>
 
-<h2 id="-">生成器：一种更好的方式来构建迭代器</h2>
-<p>虽然自定义的迭代器是一种很有用的工具，但是创建它们的时候要仔细规划，因为需要显式的维护它们的内部状态。
-生成器提供了很强大的功能：它允许你定义一个包含自有迭代算法的函数， 同时它可以自动维护自己的状态。</p>
+<h2 id="生成器：一种更好的方式来构建迭代器">生成器：一种更好的方式来构建迭代器</h2>
+<p>虽然自定义的迭代器是一种很有用的工具，但是创建它们的时候要仔细规划，因为需要显式的维护它们的内部状态。<br>生成器提供了很强大的功能：它允许你定义一个包含自有迭代算法的函数， 同时它可以自动维护自己的状态。</p>
 <p>生成器是可以作为迭代器工厂的特殊函数。如果一个函数包含了一个或多个 <code>yield</code> 表达式，那么就称它为生成器(译者注：Node.js 还需要在函数名前加 <code>*</code> 来表示)。</p>
 <blockquote>
 <p>注意：只有 HTML 中被包含在 <code>&lt;script type=&quot;application/javascript;version=1.7&quot;&gt;</code> (或者更高版本)中的代码块才可以使用 <code>yield</code> 关键字。<a href="https://developer.mozilla.org/en-US/docs/XUL" target="_blank">XUL</a> (XML User Interface Language) 脚本标签不需要指定这个特殊的代码块也可以访问这些特性。</p>
@@ -553,7 +552,7 @@ console.log(<span class="string">'listening on port 3000'</span>);
     }
 </pre></td></tr></table></figure>
 
-<h2 id="-">生成器高级特性</h2>
+<h2 id="生成器高级特性">生成器高级特性</h2>
 <p>生成器可以根据需求计算yield返回值，这使得它可以表示以前昂贵的序列计算需求，甚至是上面所示的无限序列。</p>
 <p>除了 <code>next()</code> 方法，generator-iterator 对象还有一个 <code>send()</code> 方法，该方法可以修改生成器的内部状态。传给 <code>send()</code> 的值将会被当做最后一个 <code>yield</code> 表达式的结果，并且会暂停生成器。在你使用 <code>send()</code> 方法传一个指定值前，你必须至少调用一次 <code>next()</code> 来启动生成器。</p>
 <p>下面的斐波那契生成器使用 <code>send()</code> 方法来重启序列：</p>
@@ -624,9 +623,9 @@ console.log(<span class="string">'listening on port 3000'</span>);
 <li>如果 <code>finally</code> 字句抛出了除 <code>StopIteration</code> 以外的任何异常，该异常将会被传递到 <code>close()</code> 方法的调用者</li>
 <li>生成器会终止</li>
 </ol>
-<h2 id="-">生成器表达式</h2>
-<p><a href="https://developer.mozilla.org/en/JavaScript/Guide/Predefined_Core_Objects#Array_comprehensions" target="_blank">数组推导式</a>的一个明显缺点是，它们会导致整个数组在内存中构造。当输入到推导式的本身是个小数组时它的开销是微不足道的--但是，当输入数组很大或者创建一个新的昂贵(或者是无限的)数组生成器时就可能出现问题。</p>
-<p>生成器允许对序列延迟计算(lazy computation)，在需要时按需计算元素。生成器表达式在句法上几乎和数组推导式相同--它用圆括号来代替方括号(而且用 <code>for...in</code> 代替 <code>for each...in</code>)--但是它创建一个生成器而不是数组，这样就可以延迟计算。你可以把它想象成创建生成器的简短语法。</p>
+<h2 id="生成器表达式">生成器表达式</h2>
+<p><a href="https://developer.mozilla.org/en/JavaScript/Guide/Predefined_Core_Objects#Array_comprehensions" target="_blank">数组推导式</a>的一个明显缺点是，它们会导致整个数组在内存中构造。当输入到推导式的本身是个小数组时它的开销是微不足道的—但是，当输入数组很大或者创建一个新的昂贵(或者是无限的)数组生成器时就可能出现问题。</p>
+<p>生成器允许对序列延迟计算(lazy computation)，在需要时按需计算元素。生成器表达式在句法上几乎和数组推导式相同—它用圆括号来代替方括号(而且用 <code>for...in</code> 代替 <code>for each...in</code>)—但是它创建一个生成器而不是数组，这样就可以延迟计算。你可以把它想象成创建生成器的简短语法。</p>
 <p>假设我们有一个迭代器 <code>it</code> 来迭代一个巨大的整数序列。我们需要创建一个新的迭代器来迭代偶数。一个数组推导式将会在内存中创建整个包含所有偶数的数组：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 </pre></td><td class="code"><pre>    <span class="keyword">var</span> doubles = [i * <span class="number">2</span> <span class="keyword">for</span> (i <span class="keyword">in</span> it)];
@@ -680,68 +679,27 @@ console.log(<span class="string">'listening on port 3000'</span>);
 <li>代码库老化(意味着在升级node.js时频繁的失败)</li>
 </ul>
 <p>这就是为什么我们要在过去的几个月里去写<a href="https://github.com/Unitech/pm2" target="_blank">PM2模块</a>.在我们即将发布针对生产环境的正式版之前我们想先让您看一眼.</p>
-<h3 id="-pm2-"><strong>PM2到底是什么个东西呢?</strong></h3>
+<h3 id="<strong>PM2到底是什么个东西呢?</strong>"><strong>PM2到底是什么个东西呢?</strong></h3>
 <p>首先第一件事,你需要先通过<code>npm</code>来安装它:</p>
-<pre><code>npm install -g pm2
+<pre><code>npm <span class="keyword">install</span> -g pm2
 </code></pre><p>让我们通过表格来对比下:</p>
-<table class="table table-bordered table-striped table-condensed">
-   <tr>
-      <th width="50%">Feature</th>
-      <th width="25%">Forever</th>
-      <th width="25%">PM2</th>
-   </tr>
-   <tr>
-      <td>Keep Alive</td>
-      <td>&#10004;</td>
-      <td>&#10004;</td>
-   </tr>
-   <tr>
-      <td>Coffeescript</td>
-      <td>&#10004;</td>
-      <td>&nbsp;</td>
-   </tr>
-   <tr>
-      <td>Log aggregation</td>
-      <td>&nbsp;</td>
-      <td>&#10004;</td>
-   </tr>
-   <tr>
-      <td>API</td>
-      <td>&nbsp;</td>
-      <td>&#10004;</td>
-   </tr>
-   <tr>
-      <td>Terminal monitoring</td>
-      <td>&nbsp;</td>
-      <td>&#10004;</td>
-   </tr>
-   <tr>
-      <td>Clustering</td>
-      <td>&nbsp;</td>
-      <td>&#10004;</td>
-   </tr>
-   <tr>
-      <td>JSON configuration</td>
-      <td>&nbsp;</td>
-      <td>&#10004;</td>
-   </tr>
-</table>
+<table class="table table-bordered table-striped table-condensed"><br>   <tr><br>      <th width="50%">Feature</th><br>      <th width="25%">Forever</th><br>      <th width="25%">PM2</th><br>   </tr><br>   <tr><br>      <td>Keep Alive</td><br>      <td>&#10004;</td><br>      <td>&#10004;</td><br>   </tr><br>   <tr><br>      <td>Coffeescript</td><br>      <td>&#10004;</td><br>      <td>&nbsp;</td><br>   </tr><br>   <tr><br>      <td>Log aggregation</td><br>      <td>&nbsp;</td><br>      <td>&#10004;</td><br>   </tr><br>   <tr><br>      <td>API</td><br>      <td>&nbsp;</td><br>      <td>&#10004;</td><br>   </tr><br>   <tr><br>      <td>Terminal monitoring</td><br>      <td>&nbsp;</td><br>      <td>&#10004;</td><br>   </tr><br>   <tr><br>      <td>Clustering</td><br>      <td>&nbsp;</td><br>      <td>&#10004;</td><br>   </tr><br>   <tr><br>      <td>JSON configuration</td><br>      <td>&nbsp;</td><br>      <td>&#10004;</td><br>   </tr><br></table>
 
 
-<p>现在让我来介绍一点点主要特性...</p>
-<h3 id="-"><strong>原生的集群化支持</strong></h3>
+<p>现在让我来介绍一点点主要特性…</p>
+<h3 id="<strong>原生的集群化支持</strong>"><strong>原生的集群化支持</strong></h3>
 <p>Node v0.6引入了集群特性,允许你在多个Node应用中共享socket.问题在于,它不能在容器外运行而且需要一些额外的配置来处理主进程和子进程.</p>
 <p>PM2原生支持处理这个问题,而且不需要额外的代码:PM2本身作为主进程,然后它将你的代码封装到一个特殊的集群进程里,就像node.js一样,为你的代码文件添加一些全局变量.</p>
 <p>想要启动一个使用所有CPU核心的集群,你只需要键入如下的指令:</p>
-<pre><code>$ pm2 start app.js -i max
+<pre><code>$ pm2 <span class="operator"><span class="keyword">start</span> app.js -i <span class="aggregate">max</span></span>
 </code></pre><p>然后:</p>
-<pre><code>$ pm2 list
+<pre><code><span class="variable">$ </span>pm2 list
 </code></pre><p>然后就会显示类似下面的东西(ASCII UI FTW);</p>
 <p><img src="/img/goodbye-node-forever-hello-pm2-translation/pm2-list.png" alt="pm2-list"></p>
 <p>就像你看到的,现在你的应用有多少个进程就取决于你的CPU核心数了</p>
-<h3 id="-termcaps-htop-linux-"><strong>按照termcaps-HTOP(Linux下的系统监控与进程管理软件)的方式管理</strong></h3>
+<h3 id="<strong>按照termcaps-HTOP(Linux下的系统监控与进程管理软件)的方式管理</strong>"><strong>按照termcaps-HTOP(Linux下的系统监控与进程管理软件)的方式管理</strong></h3>
 <p>通过<code>pm2 list</code>命令来观察所有运行的进程以及它们的状态已经足够好了.但是怎么来追踪它们的资源消耗呢?别担心,用这个命令:</p>
-<pre><code>$ pm2 monit
+<pre><code><span class="variable">$ </span>pm2 monit
 </code></pre><p>你可以得到进程(以及集群)的CPU的使用率和内存占用.</p>
 <p><img src="/img/goodbye-node-forever-hello-pm2-translation/pm2-monit.png" alt="pm2-monit"></p>
 <p><strong>声明:</strong><a href="https://github.com/arunoda/node-usage" target="_blank">node-usage</a>到目前为止还不支持MacOS(随便什么性能要求),不过它在Linux下运行良好.</p>
@@ -759,25 +717,25 @@ console.log(<span class="string">'listening on port 3000'</span>);
 </pre></td></tr></table></figure>
 
 <p>在另一个终端,运行监控选项:</p>
-<pre><code>$ pm2 monit
+<pre><code><span class="variable">$ </span>pm2 monit
 </code></pre><p>耶~</p>
-<h3 id="-log-"><strong>实时集中log处理</strong></h3>
-<p>现在你不得不管理多个集群进程:一个爬取数据,一个处理数据,等等...这就意味着大量log,你可以按照老式的方法处理:</p>
-<pre><code>$ tail -f /path/to/log1 /path/to/log2 ...
+<h3 id="<strong>实时集中log处理</strong>"><strong>实时集中log处理</strong></h3>
+<p>现在你不得不管理多个集群进程:一个爬取数据,一个处理数据,等等…这就意味着大量log,你可以按照老式的方法处理:</p>
+<pre><code>$ tail -f /path/to/log1 /path/to/log2 <span class="keyword">...</span>
 </code></pre><p>但我们想的很周到,我们增加了<code>logs</code>功能:</p>
-<pre><code>$ pm2 logs
+<pre><code><span class="variable">$ </span>pm2 logs
 </code></pre><p><img src="/img/goodbye-node-forever-hello-pm2-translation/pm2-logs.png" alt="pm2-logs"></p>
-<h3 id="-"><strong>快速恢复</strong></h3>
+<h3 id="<strong>快速恢复</strong>"><strong>快速恢复</strong></h3>
 <p>现在事情一切顺利,你的进程嗡嗡的运行着,你需要做一次硬重启(hard restart).现在吗?是的,首先,dump掉:</p>
-<pre><code>$ pm2 dump
+<pre><code><span class="variable">$ </span>pm2 dump
 </code></pre><p>然后,你可以从文件中恢复它:</p>
-<pre><code>$ pm2 kill      //让我们假设一个PM2停掉了
-$ pm2 resurect  //我所有的进程又满血满状态复活了
-</code></pre><h3 id="-api-"><strong>强健的API</strong></h3>
-<p>比方说,你想要监控所有被PM2管理的进程,而且同时还想监控运行这些进程的机器的状态(甚至希望创建一个Angular应用来调用这些API...):</p>
-<pre><code>$ pm2 web
-</code></pre><p>打开浏览器输入<a href="http://localhost:9615" target="_blank"><a href="http://localhost:9615">http://localhost:9615</a></a> ,我嘞个去!</p>
-<h3 id="-"><strong>对了,还有很多特性...</strong></h3>
+<pre><code>$ pm2 <span class="built_in">kill</span>     <span class="comment"> //让我们假设一个PM2停掉了</span>
+$ pm2 resurect <span class="comment"> //我所有的进程又满血满状态复活了</span>
+</code></pre><h3 id="<strong>强健的API</strong>"><strong>强健的API</strong></h3>
+<p>比方说,你想要监控所有被PM2管理的进程,而且同时还想监控运行这些进程的机器的状态(甚至希望创建一个Angular应用来调用这些API…):</p>
+<pre><code><span class="variable">$ </span>pm2 web
+</code></pre><p>打开浏览器输入<a href="http://localhost:9615" target="_blank">http://localhost:9615</a> ,我嘞个去!</p>
+<h3 id="<strong>对了,还有很多特性…</strong>"><strong>对了,还有很多特性…</strong></h3>
 <ul>
 <li>全部测试通过,</li>
 <li>新一代的<code>update-rc.d</code>(<code>pm2 startup</code>),当然它还是alpha版,</li>
@@ -788,7 +746,7 @@ $ pm2 resurect  //我所有的进程又满血满状态复活了
 <li>记录重启的次数和时间,</li>
 <li>退出时自动杀死进程.</li>
 </ul>
-<h2 id="-"><strong>下一步计划?</strong></h2>
+<h2 id="<strong>下一步计划?</strong>"><strong>下一步计划?</strong></h2>
 <p>首先,你可以去<a href="https://github.com/Unitech/pm2" target="_blank">Github上</a>粉我们(我们喜欢stars).</p>
 <p>我们开发的PM2提供了先进完整的Node进程管理解决方案.我们希望能有更多的人来帮助我们:更多的pull requests.一些还停留在开发路线图上面的功能我们会尽快完成,下面这些就是:</p>
 <ul>

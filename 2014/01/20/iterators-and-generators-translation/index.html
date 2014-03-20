@@ -87,15 +87,15 @@
 		
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
-		<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#-"><span class="toc-number">1.</span> <span class="toc-text">迭代器和生成器</span></a></li><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#-"><span class="toc-number">1.1.</span> <span class="toc-text">迭代器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#-"><span class="toc-number">1.2.</span> <span class="toc-text">声明自定义迭代器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#-"><span class="toc-number">1.3.</span> <span class="toc-text">生成器：一种更好的方式来构建迭代器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#-"><span class="toc-number">1.4.</span> <span class="toc-text">生成器高级特性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#-"><span class="toc-number">1.5.</span> <span class="toc-text">生成器表达式</span></a></li></ol>
+		<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#迭代器和生成器"><span class="toc-number">1.</span> <span class="toc-text">迭代器和生成器</span></a></li><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#迭代器"><span class="toc-number">1.1.</span> <span class="toc-text">迭代器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#声明自定义迭代器"><span class="toc-number">1.2.</span> <span class="toc-text">声明自定义迭代器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#生成器：一种更好的方式来构建迭代器"><span class="toc-number">1.3.</span> <span class="toc-text">生成器：一种更好的方式来构建迭代器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#生成器高级特性"><span class="toc-number">1.4.</span> <span class="toc-text">生成器高级特性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#生成器表达式"><span class="toc-number">1.5.</span> <span class="toc-text">生成器表达式</span></a></li></ol>
 		</div>
 		
-		<h1 id="-">迭代器和生成器</h1>
+		<h1 id="迭代器和生成器">迭代器和生成器</h1>
 <p>翻译自 MDN 官方文档，原文地址：<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators?redirectlocale=en-US&amp;redirectslug=JavaScript%2FGuide%2FIterators_and_Generators" target="_blank">Iterators and Generators</a></p>
-<p>处理集合里的每一项是一个非常普通的操作，JavaScript提供了许多方法来迭代一个集合，从简单的<a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for" target="_blank">for</a>和<a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for_each...in" target="_blank">for each</a>循环到 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/map" target="_blank">map()</a>，<a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/filter" target="_blank">filter()</a> 和 <a href="https://developer.mozilla.org/en/JavaScript/Guide/Predefined_Core_Objects#Array_comprehensions" target="_blank">array comprehensions</a>(数组推导式)。在JavaScript 1.7中，迭代器和生成器在JavaScript核心语法中带来了新的迭代机制，而且还提供了定制 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for...in" target="_blank">for...in</a> 和 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for_each...in" target="_blank">for each</a> 循环行为的机制。</p>
-<h2 id="-">迭代器</h2>
+<p>处理集合里的每一项是一个非常普通的操作，JavaScript提供了许多方法来迭代一个集合，从简单的<a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for" target="_blank">for</a>和<a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for_each...in" target="_blank">for each</a>循环到 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/map" target="_blank">map()</a>，<a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/filter" target="_blank">filter()</a> 和 <a href="https://developer.mozilla.org/en/JavaScript/Guide/Predefined_Core_Objects#Array_comprehensions" target="_blank">array comprehensions</a>(数组推导式)。在JavaScript 1.7中，迭代器和生成器在JavaScript核心语法中带来了新的迭代机制，而且还提供了定制 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for...in" target="_blank">for…in</a> 和 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for_each...in" target="_blank">for each</a> 循环行为的机制。</p>
+<h2 id="迭代器">迭代器</h2>
 <p>迭代器是一个每次访问集合序列中一个元素的对象，并跟踪该序列中迭代的当前位置。在JavaScript中迭代器是一个对象，这个对象提供了一个 <code>next()</code> 方法，<code>next()</code> 方法返回序列中的下一个元素。当序列中所有元素都遍历完成时，该方法抛出 <code>StopIteration</code> 异常。</p>
-<p>迭代器对象一旦被建立，就可以通过显式的重复调用<code>next()</code>，或者使用JavaScript的 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for...in" target="_blank">for...in</a> 和 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for_each...in" target="_blank">for each</a> 循环隐式调用。</p>
+<p>迭代器对象一旦被建立，就可以通过显式的重复调用<code>next()</code>，或者使用JavaScript的 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for...in" target="_blank">for…in</a> 和 <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for_each...in" target="_blank">for each</a> 循环隐式调用。</p>
 <p>简单的对对象和数组进行迭代的迭代器可以使用 <code>Iterator()</code> 被创建：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
@@ -112,7 +112,7 @@
     pair = it.<span class="keyword">next</span>(); <span class="regexp">//</span>一个 `<span class="constant">StopIteration</span>` 异常被抛出
 </pre></td></tr></table></figure>
 
-<p><a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for...in" target="_blank">for...in</a> 循环可以被用来替换显式的调用 <code>next()</code> 方法。当 <code>StopIteration</code> 异常被抛出时，循环会自动终止。</p>
+<p><a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/for...in" target="_blank">for…in</a> 循环可以被用来替换显式的调用 <code>next()</code> 方法。当 <code>StopIteration</code> 异常被抛出时，循环会自动终止。</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
@@ -165,7 +165,7 @@
       <span class="built_in">print</span>(i + <span class="string">': '</span> + lang); <span class="regexp">//</span>输出 <span class="string">"0: JavaScript"</span> 等
 </pre></td></tr></table></figure>
 
-<h2 id="-">声明自定义迭代器</h2>
+<h2 id="声明自定义迭代器">声明自定义迭代器</h2>
 <p>一些代表元素集合的对象应该用一种指定的方式来迭代。</p>
 <ul>
 <li>迭代一个表示范围(Range)的对象应该一个接一个的返回这个范围包含的数字</li>
@@ -227,9 +227,8 @@
       <span class="built_in">print</span>(i); <span class="comment">//输出 3，然后 4，然后 5</span>
 </pre></td></tr></table></figure>
 
-<h2 id="-">生成器：一种更好的方式来构建迭代器</h2>
-<p>虽然自定义的迭代器是一种很有用的工具，但是创建它们的时候要仔细规划，因为需要显式的维护它们的内部状态。
-生成器提供了很强大的功能：它允许你定义一个包含自有迭代算法的函数， 同时它可以自动维护自己的状态。</p>
+<h2 id="生成器：一种更好的方式来构建迭代器">生成器：一种更好的方式来构建迭代器</h2>
+<p>虽然自定义的迭代器是一种很有用的工具，但是创建它们的时候要仔细规划，因为需要显式的维护它们的内部状态。<br>生成器提供了很强大的功能：它允许你定义一个包含自有迭代算法的函数， 同时它可以自动维护自己的状态。</p>
 <p>生成器是可以作为迭代器工厂的特殊函数。如果一个函数包含了一个或多个 <code>yield</code> 表达式，那么就称它为生成器(译者注：Node.js 还需要在函数名前加 <code>*</code> 来表示)。</p>
 <blockquote>
 <p>注意：只有 HTML 中被包含在 <code>&lt;script type=&quot;application/javascript;version=1.7&quot;&gt;</code> (或者更高版本)中的代码块才可以使用 <code>yield</code> 关键字。<a href="https://developer.mozilla.org/en-US/docs/XUL" target="_blank">XUL</a> (XML User Interface Language) 脚本标签不需要指定这个特殊的代码块也可以访问这些特性。</p>
@@ -363,7 +362,7 @@
     }
 </pre></td></tr></table></figure>
 
-<h2 id="-">生成器高级特性</h2>
+<h2 id="生成器高级特性">生成器高级特性</h2>
 <p>生成器可以根据需求计算yield返回值，这使得它可以表示以前昂贵的序列计算需求，甚至是上面所示的无限序列。</p>
 <p>除了 <code>next()</code> 方法，generator-iterator 对象还有一个 <code>send()</code> 方法，该方法可以修改生成器的内部状态。传给 <code>send()</code> 的值将会被当做最后一个 <code>yield</code> 表达式的结果，并且会暂停生成器。在你使用 <code>send()</code> 方法传一个指定值前，你必须至少调用一次 <code>next()</code> 来启动生成器。</p>
 <p>下面的斐波那契生成器使用 <code>send()</code> 方法来重启序列：</p>
@@ -434,9 +433,9 @@
 <li>如果 <code>finally</code> 字句抛出了除 <code>StopIteration</code> 以外的任何异常，该异常将会被传递到 <code>close()</code> 方法的调用者</li>
 <li>生成器会终止</li>
 </ol>
-<h2 id="-">生成器表达式</h2>
-<p><a href="https://developer.mozilla.org/en/JavaScript/Guide/Predefined_Core_Objects#Array_comprehensions" target="_blank">数组推导式</a>的一个明显缺点是，它们会导致整个数组在内存中构造。当输入到推导式的本身是个小数组时它的开销是微不足道的--但是，当输入数组很大或者创建一个新的昂贵(或者是无限的)数组生成器时就可能出现问题。</p>
-<p>生成器允许对序列延迟计算(lazy computation)，在需要时按需计算元素。生成器表达式在句法上几乎和数组推导式相同--它用圆括号来代替方括号(而且用 <code>for...in</code> 代替 <code>for each...in</code>)--但是它创建一个生成器而不是数组，这样就可以延迟计算。你可以把它想象成创建生成器的简短语法。</p>
+<h2 id="生成器表达式">生成器表达式</h2>
+<p><a href="https://developer.mozilla.org/en/JavaScript/Guide/Predefined_Core_Objects#Array_comprehensions" target="_blank">数组推导式</a>的一个明显缺点是，它们会导致整个数组在内存中构造。当输入到推导式的本身是个小数组时它的开销是微不足道的—但是，当输入数组很大或者创建一个新的昂贵(或者是无限的)数组生成器时就可能出现问题。</p>
+<p>生成器允许对序列延迟计算(lazy computation)，在需要时按需计算元素。生成器表达式在句法上几乎和数组推导式相同—它用圆括号来代替方括号(而且用 <code>for...in</code> 代替 <code>for each...in</code>)—但是它创建一个生成器而不是数组，这样就可以延迟计算。你可以把它想象成创建生成器的简短语法。</p>
 <p>假设我们有一个迭代器 <code>it</code> 来迭代一个巨大的整数序列。我们需要创建一个新的迭代器来迭代偶数。一个数组推导式将会在内存中创建整个包含所有偶数的数组：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 </pre></td><td class="code"><pre>    <span class="keyword">var</span> doubles = [i * <span class="number">2</span> <span class="keyword">for</span> (i <span class="keyword">in</span> it)];
@@ -515,7 +514,7 @@
 
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
-  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#-"><span class="toc-number">1.</span> <span class="toc-text">迭代器和生成器</span></a></li><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#-"><span class="toc-number">1.1.</span> <span class="toc-text">迭代器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#-"><span class="toc-number">1.2.</span> <span class="toc-text">声明自定义迭代器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#-"><span class="toc-number">1.3.</span> <span class="toc-text">生成器：一种更好的方式来构建迭代器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#-"><span class="toc-number">1.4.</span> <span class="toc-text">生成器高级特性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#-"><span class="toc-number">1.5.</span> <span class="toc-text">生成器表达式</span></a></li></ol>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#迭代器和生成器"><span class="toc-number">1.</span> <span class="toc-text">迭代器和生成器</span></a></li><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#迭代器"><span class="toc-number">1.1.</span> <span class="toc-text">迭代器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#声明自定义迭代器"><span class="toc-number">1.2.</span> <span class="toc-text">声明自定义迭代器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#生成器：一种更好的方式来构建迭代器"><span class="toc-number">1.3.</span> <span class="toc-text">生成器：一种更好的方式来构建迭代器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#生成器高级特性"><span class="toc-number">1.4.</span> <span class="toc-text">生成器高级特性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#生成器表达式"><span class="toc-number">1.5.</span> <span class="toc-text">生成器表达式</span></a></li></ol>
   </div>
 
 <div id="asidepart">

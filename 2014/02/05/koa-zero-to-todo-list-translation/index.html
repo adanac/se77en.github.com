@@ -87,15 +87,15 @@
 		
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
-		<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#-node-0-11-x-harmony-"><span class="toc-number">1.</span> <span class="toc-text"> 来执行代码</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#-"><span class="toc-number"></span> <span class="toc-text">之前的方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#-koa-"><span class="toc-number"></span> <span class="toc-text">进入 Koa：建立在生成器机制上的框架</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#-koa-todo-"><span class="toc-number"></span> <span class="toc-text">使用 Koa 做一个 TODO 应用</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#-"><span class="toc-number">1.</span> <span class="toc-text">一些需要注意的：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#-"><span class="toc-number">2.</span> <span class="toc-text">一些警告：</span></a></li></ol>
+		<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#注意：你需要使用node_0-11-x外加_<code>-harmony</code>_来执行代码"><span class="toc-number">1.</span> <span class="toc-text"> 来执行代码</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#之前的方式"><span class="toc-number"></span> <span class="toc-text">之前的方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#进入_Koa：建立在生成器机制上的框架"><span class="toc-number"></span> <span class="toc-text">进入 Koa：建立在生成器机制上的框架</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用_Koa_做一个_TODO_应用"><span class="toc-number"></span> <span class="toc-text">使用 Koa 做一个 TODO 应用</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#一些需要注意的："><span class="toc-number">1.</span> <span class="toc-text">一些需要注意的：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#一些警告："><span class="toc-number">2.</span> <span class="toc-text">一些警告：</span></a></li></ol>
 		</div>
 		
 		<p>原文地址：<a href="http://blog.peterdecroos.com/blog/2014/02/01/koa-zero-to-todo-list/" target="_blank">Koa: Zero to Todo List</a></p>
 <blockquote>
-<h3 id="-node-0-11-x-harmony-">注意：你需要使用node 0.11.x外加 <code>-harmony</code> 来执行代码</h3>
+<h3 id="注意：你需要使用node_0-11-x外加_<code>-harmony</code>_来执行代码">注意：你需要使用node 0.11.x外加 <code>-harmony</code> 来执行代码</h3>
 </blockquote>
 <p>Express 团队利用新的 ECMAScript 6 的生成器语法创建了新的框架，<a href="http://koajs.com/" target="_blank">Koa</a> 框架是一个全新的 node web 框架，包含了很多有意思的东西。</p>
-<h2 id="-">之前的方式</h2>
+<h2 id="之前的方式">之前的方式</h2>
 <p>在 node 标准库里，<code>http</code> 模块被用来创建服务。</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
@@ -116,7 +116,7 @@ console.log(<span class="string">'listening on port 3000'</span>);
 </pre></td></tr></table></figure>
 
 <p>Express 暴露一个方法使我们可以将 <code>http.createServer</code> 作为回调。Express 中间件是一个函数集合，每个函数包含了三个参数 <code>req</code>,<code>res</code>,<code>next</code>。中间件执行一些操作，修改请求或者返回对象然后通过调用 <code>next()</code> 来传递到堆栈里的下一个中间件。它类似一个瀑布模型，在中间件栈的底部结束响应。</p>
-<h2 id="-koa-">进入 Koa：建立在生成器机制上的框架</h2>
+<h2 id="进入_Koa：建立在生成器机制上的框架">进入 Koa：建立在生成器机制上的框架</h2>
 <p>就像 Express，Koa 也是生成一个可以被传递到 <code>http.createServer()</code> 的回调。与 Express 不同的是，它使用生成器提供一个更加细粒度的控制流程。</p>
 <p>下面是一个最基本的 Koa 应用，用来读取一个文件的内容</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
@@ -166,7 +166,7 @@ console.log(<span class="string">'now listening on port 3000'</span>);
 <p>不像 Express，Koa 中中间件使用生成器来编写。在 Koa 流中下游的中间件在返回时向上流动(回形针调用方式，具体参见：koajs.cn)。通过显式的调用 <code>yield next</code> 来执行下游中间件。当下游中间件返回时，控制流回溯到上游中间件。</p>
 <p>Express 通过不同的函数来传递 node 原生的 req 和 res，Koa 则是通过讲它们装入一个借口来管理上下文。不过它们仍然可以通过 <code>this</code> 关键字获取到，像这样：<code>this.req</code>, <code>this.res</code>。然而，在文档中直接使用原生对象是不被推荐的。可以预测到当在控制流中调用 <code>this.res.end(&#39;&#39;)</code> 时会抛出一个 monkey wrench(猴子扳手？此处不会翻译欢迎指正)。所以建议你使用 <code>this.request</code> 和 <code>this.response</code> 来代替直接调用原生对象。很多方法都起了别名指向直接用 <code>this</code> 调用，比如：<code>this.body</code> 就是 <code>this.response.body</code> 的别名。</p>
 <p>目前似乎还没有出现可以直接得到请求体的办法。co-body 分析器可以直接的解析请求体，不过文档说别这么做，Koa 是一个年轻的框架，所以别让你的手闲下来。</p>
-<h2 id="-koa-todo-">使用 Koa 做一个 TODO 应用</h2>
+<h2 id="使用_Koa_做一个_TODO_应用">使用 Koa 做一个 TODO 应用</h2>
 <p>刚才我们已经简单的进行了介绍，现在来试着做一个复杂点的。一个 TODO 应用貌似不错，为了简化，我们把 todos 存放在内存里。</p>
 <p>Koa 是一个极简的框架，它核心里并没有提供 body 解析，session 和 routing。不幸的是 Koa 太嫩了以至于还没有很多 npm 的模块是为它来写的。浏览了一下 <a href="https://github.com/koajs/koa/wiki" target="_blank">Koa 介绍页面</a>发现有一些必要的模块可以供给我们的基本 TODO 应用来使用。</p>
 <ol>
@@ -294,11 +294,11 @@ console.log(<span class="string">'listening on port 3000'</span>);
 </pre></td></tr></table></figure>
 
 <p>从 <a href="https://github.com/cultofmetatron/koa-todo" target="_blank">github</a> 上下载完整代码，github 上的版本包含了前端代码。</p>
-<h3 id="-">一些需要注意的：</h3>
+<h3 id="一些需要注意的：">一些需要注意的：</h3>
 <p><code>yield</code> 关键字可以做一些有意思的事情。如果我们向当前中间件传递一个一步函数，这个函数返回数据块或者 promise，那么它会停止执行当前中间件直到函数完成。等它返回数据块或者 promise 后，会恢复生成器执行。这样更容易阅读。</p>
-<h3 id="-">一些警告：</h3>
+<h3 id="一些警告：">一些警告：</h3>
 <p><code>yield</code> 关键字使我们可以写出一些安全的代码块，但它也不总是理想的解决办法。</p>
-<p>举个栗子，如果我们执行三个相互不依赖的异步操作，像下面这样...</p>
+<p>举个栗子，如果我们执行三个相互不依赖的异步操作，像下面这样…</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
@@ -380,7 +380,7 @@ console.log(<span class="string">'listening on port 3000'</span>);
 
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
-  <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#-node-0-11-x-harmony-"><span class="toc-number">1.</span> <span class="toc-text"> 来执行代码</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#-"><span class="toc-number"></span> <span class="toc-text">之前的方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#-koa-"><span class="toc-number"></span> <span class="toc-text">进入 Koa：建立在生成器机制上的框架</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#-koa-todo-"><span class="toc-number"></span> <span class="toc-text">使用 Koa 做一个 TODO 应用</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#-"><span class="toc-number">1.</span> <span class="toc-text">一些需要注意的：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#-"><span class="toc-number">2.</span> <span class="toc-text">一些警告：</span></a></li></ol>
+  <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#注意：你需要使用node_0-11-x外加_<code>-harmony</code>_来执行代码"><span class="toc-number">1.</span> <span class="toc-text"> 来执行代码</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#之前的方式"><span class="toc-number"></span> <span class="toc-text">之前的方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#进入_Koa：建立在生成器机制上的框架"><span class="toc-number"></span> <span class="toc-text">进入 Koa：建立在生成器机制上的框架</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用_Koa_做一个_TODO_应用"><span class="toc-number"></span> <span class="toc-text">使用 Koa 做一个 TODO 应用</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#一些需要注意的："><span class="toc-number">1.</span> <span class="toc-text">一些需要注意的：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#一些警告："><span class="toc-number">2.</span> <span class="toc-text">一些警告：</span></a></li></ol>
   </div>
 
 <div id="asidepart">

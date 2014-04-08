@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://se77en.cc/"/>
-  <updated>2014-03-21T05:01:11.488Z</updated>
+  <updated>2014-04-08T12:05:57.070Z</updated>
   <id>http://se77en.cc/</id>
   
   <author>
@@ -13,6 +13,687 @@
   </author>
   
   <generator uri="http://zespia.tw/hexo/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[Go 语言的并发模型--通过通信来共享内存]]></title>
+    <link href="http://se77en.cc/2014/04/08/share-by-communicating-the-concurrency-slogan-in-golang/"/>
+    <id>http://se77en.cc/2014/04/08/share-by-communicating-the-concurrency-slogan-in-golang/</id>
+    <published>2014-04-08T00:00:00.000Z</published>
+    <updated>2014-04-08T12:05:17.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="概述">概述</h2>
+<p>我一直在找一种好的方法来解释 go 语言的<a href="http://golang.org/doc/effective_go.html#concurrency" target="_blank">并发模型</a>：</p>
+<blockquote>
+<p>不要通过共享内存来通信，相反，应该通过通信来共享内存</p>
+</blockquote>
+<p>但是没有发现一个好的解释来满足我下面的需求：</p>
+<ul>
+<li>通过一个例子来说明最初的问题</li>
+<li>提供一个共享内存的解决方案</li>
+<li>提供一个通过通信的解决方案</li>
+</ul>
+<p>这篇文章我就从这三个方面来做出解释。</p>
+<p>读过这篇文章后你应该会了解<strong><em>通过通信来共享内存</em></strong>的模型，以及它和<strong><em>通过共享内存来通信</em></strong>的区别，你还将看到如何分别通过这两种模型来解决访问和修改共享资源的问题。</p>
+<h2 id="前提">前提</h2>
+<p>设想一下我们要访问一个银行账号：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+</pre></td><td class="code"><pre><span class="keyword">type</span> Account <span class="keyword">interface</span> {
+  Withdraw(<span class="typename">uint</span>)
+  Deposit(<span class="typename">uint</span>)
+  Balance() <span class="typename">int</span>
+}
+
+<span class="keyword">type</span> Bank <span class="keyword">struct</span> {
+  account Account
+}
+
+<span class="keyword">func</span> NewBank(account Account) *Bank {
+  <span class="keyword">return</span> &Bank{account: account}
+}
+
+<span class="keyword">func</span> (bank *Bank) Withdraw(amount <span class="typename">uint</span>, actor_name <span class="typename">string</span>) {
+  fmt.Println(<span class="string">"[-]"</span>, amount, actor_name)
+  bank.account.Withdraw(amount)
+}
+
+<span class="keyword">func</span> (bank *Bank) Deposit(amount <span class="typename">uint</span>, actor_name <span class="typename">string</span>) {
+  fmt.Println(<span class="string">"[+]"</span>, amount, actor_name)
+  bank.account.Deposit(amount)
+}
+
+<span class="keyword">func</span> (bank *Bank) Balance() <span class="typename">int</span> {
+  <span class="keyword">return</span> bank.account.Balance()
+}
+</pre></td></tr></table></figure>
+
+<p>因为 <code>Account</code> 是一个接口，所以我们提供一个简单的实现：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+</pre></td><td class="code"><pre><span class="keyword">type</span> SimpleAccount <span class="keyword">struct</span>{
+  balance <span class="typename">int</span>
+}
+
+<span class="keyword">func</span> NewSimpleAccount(balance <span class="typename">int</span>) *SimpleAccount {
+  <span class="keyword">return</span> &SimpleAccount{balance: balance}
+}
+
+<span class="keyword">func</span> (acc *SimpleAccount) Deposit(amount <span class="typename">uint</span>) {
+  acc.setBalance(acc.balance + <span class="typename">int</span>(amount))
+}
+
+<span class="keyword">func</span> (acc *SimpleAccount) Withdraw(amount <span class="typename">uint</span>) {
+  <span class="keyword">if</span> acc.balance &gt;= <span class="typename">int</span>(mount) {
+    acc.setBalance(acc.balance - <span class="typename">int</span>(amount))
+  } <span class="keyword">else</span> {
+    <span class="built_in">panic</span>(<span class="string">"杰克穷死"</span>)
+  }
+}
+
+<span class="keyword">func</span> (acc *SimpleAccount) Balance() <span class="typename">int</span> {
+  <span class="keyword">return</span> acc.balance
+}
+
+<span class="keyword">func</span> (acc *SimpleAccount) setBalance(balance <span class="typename">int</span>) {
+  acc.add_some_latency()  <span class="comment">//增加一个延时函数，方便演示</span>
+  acc.balance = balance
+}
+
+<span class="keyword">func</span> (acc *SimpleAccount) add_some_latency() {
+  &lt;-time.After(time.Duration(rand.Intn<span class="number">(100</span>)) * time.Millisecond)
+}
+</pre></td></tr></table></figure>
+
+<p>你可能注意到了 <code>balance</code> 没有被直接修改，而是被放到了  <code>setBalance</code> 方法里进行修改。这样设计是为了更好的描述问题。稍后我会做出解释。</p>
+<p>把上面所有部分弄好以后我们就可以像下面这样使用它啦：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="code"><pre><span class="tag">func</span> <span class="tag">main</span>() <span class="rules">{
+  <span class="rule"><span class="attribute">balance </span>:<span class="value">= <span class="number">80</span>
+  b := bank.<span class="function">NewBank(bank.<span class="function">NewSimpleAccount(balance)</span>)</span>
+  
+  fmt.<span class="function">Println(<span class="string">"初始化余额"</span>, b.<span class="function">Balance()</span>)</span>
+  
+  b.<span class="function">Withdraw(<span class="number">30</span>, <span class="string">"马伊琍"</span>)</span>
+  
+  fmt.<span class="function">Println(<span class="string">"-----------------"</span>)</span>
+  fmt.<span class="function">Println(<span class="string">"剩余余额"</span>, b.<span class="function">Balance()</span>)</span>
+</span></span></span>}
+</pre></td></tr></table></figure>
+
+<p>运行上面的代码会输出：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+</pre></td><td class="code"><pre>初始化余额 80
+[-] 30 马伊琍
+-<span class="ruby">----------------
+</span>剩余余额 50
+</pre></td></tr></table></figure>
+
+<p>没错！</p>
+<p>不错在现实生活中，一个银行账号可以有很多个附属卡，不同的附属卡都可以对同一个账号进行存取钱，所以我们来修改一下代码：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre></td><td class="code"><pre><span class="keyword">func</span> main() {
+  balance :=<span class="number"> 80</span>
+  b := bank.NewBank(bank.NewSimpleAccount(balance))
+  
+  fmt.Println(<span class="string">"初始化余额"</span>, b.Balance())
+  
+  done := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="typename">bool</span>)
+  
+  <span class="keyword">go</span> <span class="keyword">func</span>() { b.Withdraw<span class="number">(30</span>, <span class="string">"马伊琍"</span>); done &lt;- <span class="constant">true</span> }()
+  <span class="keyword">go</span> <span class="keyword">func</span>() { b.Withdraw<span class="number">(10</span>, <span class="string">"姚笛"</span>); done &lt;- <span class="constant">true</span> }()
+  
+  <span class="comment">//等待 goroutine 执行完成</span>
+  &lt;-done
+  &lt;-done
+  
+  fmt.Println(<span class="string">"-----------------"</span>)
+  fmt.Println(<span class="string">"剩余余额"</span>, b.Balance())
+}
+</pre></td></tr></table></figure>
+
+<p>这儿两个附属卡并发的从账号里取钱，来看看输出结果：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre>初始化余额 80
+[-] 30 马伊琍
+[-] 10 姚笛
+-<span class="ruby">----------------
+</span>剩余余额 70
+</pre></td></tr></table></figure>
+
+<p>这下把文章高兴坏了:)</p>
+<p>结果当然是错误的，剩余余额应该是40而不是70，那么让我们看看到底哪儿出问题了。</p>
+<h2 id="问题">问题</h2>
+<p>当并发访问共享资源时，无效状态有很大可能会发生。</p>
+<p>在我们的例子中，当两个附属卡同一时刻从同一个账号取钱后，我们最后得到银行账号(即共享资源)错误的剩余余额(即无效状态)。</p>
+<p>我们来看一下执行时候的情况：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="code"><pre>                 处理情况
+             --------------
+             _马伊琍_|_姚笛_
+ <span class="number">1.</span> 获取余额     <span class="number">80</span>  |  <span class="number">80</span>
+ <span class="number">2.</span> 取钱       -<span class="number">30</span>  | -<span class="number">10</span>
+ <span class="number">3.</span> 当前剩余     <span class="number">50</span>  |  <span class="number">70</span>
+                <span class="keyword">...</span> | <span class="keyword">...</span>
+ <span class="number">4.</span> 设置余额     <span class="number">50</span>  ?  <span class="number">70</span>  //该先设置哪个好呢？
+ <span class="number">5.</span> 后设置的生效了
+             --------------
+ <span class="number">6.</span> 剩余余额        <span class="number">70</span>
+</pre></td></tr></table></figure>
+
+<p>上面 <code>...</code> 的地方描述了我们 <code>add_some_latency</code> 实现的延时状况，现实世界经常发生延迟情况。所以最后的剩余余额就由最后设置余额的那个附属卡决定。</p>
+<h2 id="解决办法">解决办法</h2>
+<p>我们通过两种方法来解决这个问题：</p>
+<ul>
+<li>共享内存的解决方案</li>
+<li>通过通信的解决方案</li>
+</ul>
+<p>所有的解决方案都是简单的封装了一下 <code>SimpleAccount</code> 来实现保护机制。</p>
+<h3 id="共享内存的解决方案">共享内存的解决方案</h3>
+<p>又叫 “通过共享内存来通信”。</p>
+<p>这种方案暗示了使用锁机制来预防同时访问和修改共享资源。锁告诉其它处理程序这个资源已经被一个处理程序占用了，因此别的处理程序需要排队直到当前处理程序处理完毕。</p>
+<p>让我们来看看 <code>LockingAccount</code> 是怎么实现的：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+</pre></td><td class="code"><pre>type LockingAccount struct {
+  lock    sync<span class="preprocessor">.Mutex</span>
+  account *SimpleAccount
+}
+
+//封装一下 SimpleAccount
+func NewLockingAccount(balance int) *LockingAccount {
+  return &LockingAccount{account: NewSimpleAccount(balance)}
+}
+
+func (acc *LockingAccount) Deposit(amount uint) {
+  acc<span class="preprocessor">.lock</span><span class="preprocessor">.Lock</span>()
+  defer acc<span class="preprocessor">.lock</span><span class="preprocessor">.Unlock</span>()
+  acc<span class="preprocessor">.account</span><span class="preprocessor">.Deposit</span>(amount)
+}
+
+func (acc *LockingAccount) Withdraw(amount uint) {
+  acc<span class="preprocessor">.lock</span><span class="preprocessor">.Lock</span>()
+  defer acc<span class="preprocessor">.lock</span><span class="preprocessor">.Unlock</span>()
+  acc<span class="preprocessor">.account</span><span class="preprocessor">.Withdraw</span>(amount)
+}
+
+func (acc *LockingAccount) Balance() int {
+  acc<span class="preprocessor">.lock</span><span class="preprocessor">.Lock</span>()
+  defer acc<span class="preprocessor">.lock</span><span class="preprocessor">.Unlock</span>()
+  return acc<span class="preprocessor">.account</span><span class="preprocessor">.Balance</span>()
+}
+</pre></td></tr></table></figure>
+
+<p>直接明了！注意 <code>lock sync.Lock</code>，<code>lock.Lock()</code>，<code>lock.Unlock()</code>。</p>
+<p>这样每次一个附属卡访问银行账号(即共享资源)，这个附属卡会自动获得锁直到最后操作完毕。</p>
+<p>我们的 <code>LockingAccount</code> 像下面这样使用：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre></td><td class="code"><pre><span class="keyword">func</span> main() {
+  balance :=<span class="number"> 80</span>
+  b := bank.NewBank(bank.NewLockingAccount(balance))
+  
+  fmt.Println(<span class="string">"初始化余额"</span>, b.Balance())
+  
+  done := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="typename">bool</span>)
+  
+  <span class="keyword">go</span> <span class="keyword">func</span>() { b.Withdraw<span class="number">(30</span>, <span class="string">"马伊琍"</span>); done &lt;- <span class="constant">true</span> }()
+  <span class="keyword">go</span> <span class="keyword">func</span>() { b.Withdraw<span class="number">(10</span>, <span class="string">"姚笛"</span>); done &lt;- <span class="constant">true</span> }()
+  
+  <span class="comment">//等待 goroutine 执行完成</span>
+  &lt;-done
+  &lt;-done
+  
+  fmt.Println(<span class="string">"-----------------"</span>)
+  fmt.Println(<span class="string">"剩余余额"</span>, b.Balance())
+}
+</pre></td></tr></table></figure>
+
+<p>输出的结果是：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre>初始化余额 80
+[-] 30 马伊琍
+[-] 10 姚笛
+-<span class="ruby">----------------
+</span>剩余余额 40
+</pre></td></tr></table></figure>
+
+<p>现在结果正确了！</p>
+<p>在这个例子中第一个处理程序加锁后独享共享资源，其它处理程序只能等待它执行完成。</p>
+<p>我们接着看一下执行时的情况，假设马伊琍先拿到了锁：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+</pre></td><td class="code"><pre>                            处理过程
+                        ________________
+                        _马伊琍_|__姚笛__
+        加锁                   &gt;&lt;
+        得到余额            <span class="number">80</span>  |
+        取钱               -<span class="number">30</span>  |
+        当前余额            <span class="number">50</span>  |
+                           <span class="keyword">...</span> |
+        设置余额            <span class="number">50</span>  |
+        解除锁                 &lt;&gt;
+                               |
+        当前余额                <span class="number">50</span>
+                               |
+        加锁                   &gt;&lt;
+        得到余额                |  <span class="number">50</span>
+        取钱                    | -<span class="number">10</span>
+        当前余额                |  <span class="number">40</span>
+                               |  <span class="keyword">...</span>
+        设置余额                |  <span class="number">40</span>
+        解除锁                  &lt;&gt;
+                        ________________
+        剩余余额                <span class="number">40</span>
+</pre></td></tr></table></figure>
+
+<p>现在我们的处理程序在访问共享资源时相继的产生了正确的结果。</p>
+<h3 id="通过通信的解决方案">通过通信的解决方案</h3>
+<p>又叫 “通过通信来共享内存”。</p>
+<p>现在账号被命名为 <code>ConcurrentAccount</code>，像下面这样来实现：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+</pre></td><td class="code"><pre><span class="keyword">type</span> ConcurrentAccount <span class="keyword">struct</span> {
+  account     *SimpleAccount
+  deposits    <span class="keyword">chan</span> <span class="typename">uint</span>
+  withdrawals <span class="keyword">chan</span> <span class="typename">uint</span>
+  balances    <span class="keyword">chan</span> <span class="keyword">chan</span> <span class="typename">int</span>
+}
+
+<span class="keyword">func</span> NewConcurrentAccount(amount <span class="typename">int</span>) *ConcurrentAccount{
+  acc := &ConcurrentAccount{
+    account :    &SimpleAccount{balance: amount},
+    deposits:    <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="typename">uint</span>),
+    withdrawals: <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="typename">uint</span>),
+    balances:    <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">chan</span> <span class="typename">int</span>),
+  }
+  acc.listen()
+  
+  <span class="keyword">return</span> acc
+}
+
+<span class="keyword">func</span> (acc *ConcurrentAccount) Balance() <span class="typename">int</span> {
+  ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="typename">int</span>)
+  acc.balances &lt;- ch
+  <span class="keyword">return</span> &lt;-ch
+}
+
+<span class="keyword">func</span> (acc *ConcurrentAccount) Deposit(amount <span class="typename">uint</span>) {
+  acc.deposits &lt;- amount
+}
+
+<span class="keyword">func</span> (acc *ConcurrentAccount) Withdraw(amount <span class="typename">uint</span>) {
+  acc.withdrawals &lt;- amount
+}
+
+<span class="keyword">func</span> (acc *ConcurrentAccount) listen() {
+  <span class="keyword">go</span> <span class="keyword">func</span>() {
+    <span class="keyword">for</span> {
+      <span class="keyword">select</span> {
+      <span class="keyword">case</span> amnt := &lt;-acc.deposits:
+        acc.account.Deposit(amnt)
+      <span class="keyword">case</span> amnt := &lt;-acc.withdrawals:
+        acc.account.Withdraw(amnt)
+      <span class="keyword">case</span> ch := &lt;-acc.balances:
+        ch &lt;- acc.account.Balance()
+      }
+    }
+  }()
+}
+</pre></td></tr></table></figure>
+
+<p><code>ConcurrentAccount</code> 同样封装了 <code>SimpleAccount</code> ，然后增加了通信通道</p>
+<p>调用代码和加锁版本的一样，这里就不写了，唯一不一样的就是初始化银行账号的时候：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre>b := bank<span class="preprocessor">.NewBank</span>(bank<span class="preprocessor">.NewConcurrentAccount</span>(balance))
+</pre></td></tr></table></figure>
+
+<p>运行产生的结果和和加锁版本一样：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre>初始化余额 80
+[-] 30 马伊琍
+[-] 10 姚笛
+-<span class="ruby">----------------
+</span>剩余余额 40
+</pre></td></tr></table></figure>
+
+<p>让我们来深入了解一下细节。</p>
+<h3 id="通过通信来共享内存是如何工作的">通过通信来共享内存是如何工作的</h3>
+<p>一些基本注意点：</p>
+<ul>
+<li>共享资源被封装在一个控制流程中。<br>结果就是资源成为了非共享状态。没有处理程序能够直接访问或者修改资源。你可以看到访问和修改资源的方法实际上并没有执行任何改变。</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="code"><pre>  <span class="keyword">func</span> (acc *ConcurrentAccount) Balance() <span class="typename">int</span> {
+    ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="typename">int</span>)
+    acc.balances &lt;- ch
+    balance := &lt;-ch
+    <span class="keyword">return</span> balance
+  }
+  <span class="keyword">func</span> (acc *ConcurrentAccount) Deposit(amount <span class="typename">uint</span>) {
+    acc.deposits &lt;- amount
+  }
+
+  <span class="keyword">func</span> (acc *ConcurrentAccount) Withdraw(amount <span class="typename">uint</span>) {
+    acc.withdrawals &lt;- amount
+  }
+</pre></td></tr></table></figure>
+
+
+<ul>
+<li>访问和修改是通过消息和控制流程通信。</li>
+<li>在控制流程中任何访问和修改的动作都是相继发生的。<br>当控制流程接收到访问或者修改的请求后会立即执行相关动作。让我们仔细看看这个流程：</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="code"><pre>  func (acc *ConcurrentAccount) listen() {
+    // 执行控制流程
+    go func() {
+      for {
+        select {
+        case amnt := &lt;-acc<span class="preprocessor">.deposits</span>:
+          acc<span class="preprocessor">.account</span><span class="preprocessor">.Deposit</span>(amnt)
+        case amnt := &lt;-acc<span class="preprocessor">.withdrawals</span>:
+          acc<span class="preprocessor">.account</span><span class="preprocessor">.Withdraw</span>(amnt)
+        case ch := &lt;-acc<span class="preprocessor">.balances</span>:
+          ch &lt;- acc<span class="preprocessor">.account</span><span class="preprocessor">.Balance</span>()
+        }
+      }
+    }()
+  }
+</pre></td></tr></table></figure>
+
+
+<p>  <a href="http://golang.org/ref/spec#Select_statements" target="_blank">select</a> 不断地从各个通道中取出消息，每个通道都跟它们所要执行的操作相一致。</p>
+<p>  重要的一点是：在 <code>select</code> 声明内部的一切都是相继执行的(在同一个处理程序中排队执行)。一次只有一个事件(在通道中接受或者发送)发生，这样就保证了同步访问共享资源。</p>
+<p>  领会这个有一点绕。</p>
+<p>让我们用例子来看看 <code>Balance()</code> 的执行情况：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="code"><pre>         一张附属卡的流程      |   控制流程 
+      <span class="comment">----------------------------------------------</span>
+
+ <span class="number">1.</span>     b.<span class="type">Balance</span>()         |
+ <span class="number">2.</span>             ch -&gt; [acc.balances]-&gt; ch
+ <span class="number">3.</span>             &lt;-ch        |  balance = acc.account.<span class="type">Balance</span>()
+ <span class="number">4.</span>     return  balance &lt;-[ch]&lt;- balance
+ <span class="number">5</span>                          |
+</pre></td></tr></table></figure>
+
+<p>这两个流程都干了点什么呢？</p>
+<h3 id="附属卡的流程">附属卡的流程</h3>
+<ol>
+<li>调用 <code>b.Balance()</code></li>
+<li>新建通道 <code>ch</code>，将 <code>ch</code> 通道塞入通道 <code>acc.balances</code> 中与控制流程通信，这样控制流程也可以通过 <code>ch</code> 来返回余额</li>
+<li>等待 <code>&lt;-ch</code> 来取得要接受的余额</li>
+<li>接受余额</li>
+<li>继续</li>
+</ol>
+<h3 id="控制流程">控制流程</h3>
+<ol>
+<li>空闲或者处理</li>
+<li>通过 <code>acc.balances</code> 通道里面的 <code>ch</code> 通道来接受余额请求</li>
+<li>取得真正的余额值</li>
+<li>将余额值发送到 <code>ch</code> 通道</li>
+<li>准备处理下一个请求</li>
+</ol>
+<p>控制流程每次只处理一个 <code>事件</code>。这也就是为什么除了描述出来的这些以外，第2-4步没有别的操作执行。</p>
+<h2 id="总结">总结</h2>
+<p>这篇博客描述了问题以及问题的解决办法，但那时没有深入去探究不同解决办法的优缺点。</p>
+<p>下一篇中会详尽说明并且会改进解决方案。</p>
+<p>请毫无顾忌的指出我的错误！</p>
+]]></content>
+    
+    
+      <category term="golang" scheme="http://se77en.cc/tags/golang/"/>
+    
+      <category term="concurrency" scheme="http://se77en.cc/tags/concurrency/"/>
+    
+      <category term="golang" scheme="http://se77en.cc/categories/golang/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[使用 Koa 从零打造 TODO 应用]]></title>

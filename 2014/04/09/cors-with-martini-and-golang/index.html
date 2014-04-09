@@ -82,7 +82,7 @@
     </p>
   <p class="article-time">
     <time datetime="2014-04-09T00:00:00.000Z" itemprop="datePublished">4月 9 2014</time>
-    更新日期:<time datetime="2014-04-09T06:33:47.000Z" itemprop="dateModified">4月 9 2014</time>
+    更新日期:<time datetime="2014-04-09T06:55:47.000Z" itemprop="dateModified">4月 9 2014</time>
     
   </p>
 </header>
@@ -96,6 +96,7 @@
 		
 		<h2 id="概述">概述</h2>
 <p><a href="http://www.w3.org/TR/cors/" target="_blank">CORS</a> 的全称是 Cross-Origin Resource Sharing，即：跨域资源共享</p>
+<p>根据我的理解，就是马伊琍和文章结婚了，姚笛就不能和文章结了，如果还想在一起，那就得采用一定的方法，这个方法就是跨域，哦，不对，是当第三者:)</p>
 <p>根据维基百科的解释，CORS 是一种机制，这个机制允许一个 Web 页面上 JavaScript 向另外的域发起 XMLHttpRequests 请求，注意不是向该 Web 页面所在域请求。这样的跨域请求，在 CORS 之前，根据同源安全策略是会被浏览器拒绝的。CORS 定义了一种方法，这个方法使浏览器和服务器相互作用来限定是否允许跨域请求。它显然比只有单纯的同源请求有用，而且还比简单的允许所有跨域访问要安全。</p>
 <p>在 CORS 出现之前，已经有了很多种方法来实现跨域访问，其中最有名的就是 JSONP(JSON with Padding)，JSONP 是一种使用 JavaScript 请求其它域服务器的一种通信技术，本质就是利用同源策略的漏洞，一般来说位于 xxoo.se77en.cc 的网页是无法与非 xxoo.se77en.cc 的服务器通信的，但是 HTML 里的 <code>&lt;script&gt;</code> 元素是一个例外，利用这一例外，可以通过 JavaScript 操作浏览器页面 DOM 来动态创建 Script 对象，再将 Script 的 src 属性指向另一个域的资源，服务器就会将数据伪装成一段 JavaScript 代码来实现跨域目的。不过这种技术只能发起 GET 请求，而且安全隐患极大，因为远程服务器可以发送 JavaScript 代码，所以极易受到跨网站伪造请求(CSRF/XSRF)，所以使用 JSONP 要格外小心。</p>
 <blockquote>

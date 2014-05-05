@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://se77en.cc/"/>
-  <updated>2014-04-09T06:56:11.593Z</updated>
+  <updated>2014-05-05T15:01:41.245Z</updated>
   <id>http://se77en.cc/</id>
   
   <author>
@@ -13,6 +13,468 @@
   </author>
   
   <generator uri="http://zespia.tw/hexo/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[Go 语言中的方法，接口和嵌入类型]]></title>
+    <link href="http://se77en.cc/2014/05/05/methods-interfaces-and-embedded-types-in-golang/"/>
+    <id>http://se77en.cc/2014/05/05/methods-interfaces-and-embedded-types-in-golang/</id>
+    <published>2014-05-05T00:00:00.000Z</published>
+    <updated>2014-05-04T13:35:13.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="概述">概述</h2>
+<p>在 Go 语言中，如果一个结构体和一个嵌入字段同时实现了相同的接口会发生什么呢？我们猜一下，可能有两个问题：</p>
+<ul>
+<li>编译器会因为我们同时有两个接口实现而报错吗？</li>
+<li>如果编译器接受这样的定义，那么当接口调用时编译器要怎么确定该使用哪个实现？</li>
+</ul>
+<p>在写了一些测试代码并认真深入的读了一下标准之后，我发现了一些有意思的东西，而且觉得很有必要分享出来，那么让我们先从 Go 语言中的方法开始说起。</p>
+<h2 id="方法">方法</h2>
+<p>Go 语言中同时有函数和方法。一个方法就是一个包含了<a href="http://golang.org/ref/spec#Method_declarations" target="_blank">接受者</a>的函数，接受者可以是<a href="http://golang.org/ref/spec#Types" target="_blank">命名类型</a>或者<a href="http://golang.org/ref/spec#Struct_types" target="_blank">结构体</a>类型的一个值或者是一个指针。所有给定类型的方法属于该类型的方法集。</p>
+<p>下面定义一个结构体类型和该类型的一个方法：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+</pre></td><td class="code"><pre><span class="typedef"><span class="keyword">type</span> <span class="type">User</span> struct <span class="container">{
+  <span class="type">Name</span>  <span class="title">string</span>
+  <span class="type">Email</span> <span class="title">string</span>
+}</span></span>
+
+<span class="title">func</span> (u <span class="type">User</span>) <span class="type">Notify</span>() error
+</pre></td></tr></table></figure>
+
+<p>首先我们定义了一个叫做 <code>User</code> 的结构体类型，然后定义了一个该类型的方法叫做 <code>Notify</code>，该方法的接受者是一个 <code>User</code> 类型的值。要调用 <code>Notify</code> 方法我们需要一个 <code>User</code> 类型的值或者指针：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="code"><pre><span class="comment">// User 类型的值可以调用接受者是值的方法</span>
+damon := User{<span class="string">"AriesDevil"</span>, <span class="string">"ariesdevil@xxoo.com"</span>}
+damon.Notify()
+
+<span class="comment">// User 类型的指针同样可以调用接受者是值的方法</span>
+alimon := &User{<span class="string">"A-limon"</span>, <span class="string">"alimon@ooxx.com"</span>}
+alimon.Notify()
+</pre></td></tr></table></figure>
+
+<p>在这个例子中当我们使用指针时，Go <a href="http://golang.org/ref/spec#Calls" target="_blank">调整</a>和解引用指针使得调用可以被执行。<strong><em>注意</em></strong>，当接受者不是一个指针时，该方法操作对应接受者的值的副本(意思就是即使你使用了指针调用函数，但是函数的接受者是值类型，所以函数内部操作还是对副本的操作，而不是指针操作，参见：<a href="http://play.golang.org/p/DBhWU0p1Pv" target="_blank">http://play.golang.org/p/DBhWU0p1Pv</a>)。</p>
+<p>我们可以修改 <code>Notify</code> 方法，让它的接受者使用指针类型：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre><span class="function"><span class="title">func</span> <span class="params">(u *<span class="variable">User</span>)</span> N<span class="title">otify</span><span class="params">()</span> <span class="title">error</span></span>
+</pre></td></tr></table></figure>
+
+<p>再来一次之前的调用(<strong><em>注意</em></strong>：当接受者是指针时，即使用值类型调用那么函数内部也是对指针的操作，参见：<a href="http://play.golang.org/p/SYBb4xPfPh" target="_blank">http://play.golang.org/p/SYBb4xPfPh</a>)：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="code"><pre><span class="comment">// User 类型的值可以调用接受者是指针的方法</span>
+damon := User{<span class="string">"AriesDevil"</span>, <span class="string">"ariesdevil@xxoo.com"</span>}
+damon.Notify()
+
+<span class="comment">// User 类型的指针同样可以调用接受者是指针的方法</span>
+alimon := &User{<span class="string">"A-limon"</span>, <span class="string">"alimon@ooxx.com"</span>}
+alimon.Notify()
+</pre></td></tr></table></figure>
+
+<p>如果你不清楚到底什么时候该使用值，什么时候该使用指针作为接受者，你可以去看一下这个规则集合xxx。这篇文章同时还包含了社区约定的接受者该如何命名。</p>
+<h2 id="接口">接口</h2>
+<p>Go 语言中的<a href="http://golang.org/doc/effective_go.html#interfaces" target="_blank">接口</a>很特别，而且提供了难以置信的一系列灵活性和抽象性。它们指定一个特定类型的值和指针表现为特定的方式。从语言角度看，接口是一种类型，它指定一个<a href="http://golang.org/ref/spec#Method_sets" target="_blank">方法集</a>，所有方法为<a href="http://golang.org/ref/spec#Interface_types" target="_blank">接口类型</a>就被认为是该接口。</p>
+<p>下面定义一个接口：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+</pre></td><td class="code"><pre><span class="typedef"><span class="keyword">type</span> <span class="type">Notifier</span> interface <span class="container">{
+  <span class="type">Notify</span>() <span class="title">error</span>
+}</span></span>
+</pre></td></tr></table></figure>
+
+<p>我们定义了一个叫做 <code>Notifier</code> 的接口并包含一个 <code>Notify</code> 方法。当一个接口只包含一个方法时，按照 Go 语言的<a href="http://golang.org/doc/effective_go.html#interface-names" target="_blank">约定</a>命名该接口时添加 <code>-er</code> 后缀。这个约定很有用，特别是接口和方法具有相同名字和意义的时候。</p>
+<p>我们可以在接口中定义尽可能多的方法，不过在 Go 语言标准库中，你很难找到一个接口包含两个以上的方法。</p>
+<h2 id="实现接口">实现接口</h2>
+<p>当涉及到我们该怎么让我们的类型实现接口时，Go 语言是特别的一个。Go 语言不需要我们显式的实现类型的接口。如果一个接口里的所有方法都被我们的类型实现了，那么我们就说该类型实现了该接口。</p>
+<p>让我们继续之前的例子，定义一个函数来接受任意一个实现了接口 <code>Notifier</code> 的类型的值或者指针：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+</pre></td><td class="code"><pre>func SendNotification(notify Notifier) <span class="built_in">error</span> {
+  <span class="keyword">return</span> notify.Notify()
+}
+</pre></td></tr></table></figure>
+
+<p><code>SendNotification</code> 函数调用 <code>Notify</code> 方法，这个方法被传入函数的一个值或者指针实现。这样一来一个函数就可以被用来执行任意一个实现了该接口的值或者指针的指定的行为。</p>
+<p>用我们的 <code>User</code> 类型来实现该接口并且传入一个 <code>User</code> 类型的值来调用 <code>SendNotification</code> 方法：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre></td><td class="code"><pre>func (u *User) Notify() error {
+  log.Printf(<span class="string">"User: Sending User Email To %s&lt;%s&gt;\n"</span>,
+      u.Name,
+      u.Email)
+  <span class="keyword">return</span> nil
+}
+
+func main() {
+  user := User{
+    Name:  <span class="string">"AriesDevil"</span>,
+    Email: <span class="string">"ariesdevil@xxoo.com"</span>,
+  }
+  
+  SendNotification(user)
+}
+
+<span class="comment">//Output:</span>
+cannot <span class="keyword">use</span> user (type User) <span class="keyword">as</span> type Notifier <span class="keyword">in</span> <span class="function"><span class="keyword">function</span> <span class="title">argument</span><span class="type">:
+User</span> <span class="title">does</span> <span class="title">not</span> <span class="title">implement</span> <span class="title">Notifier</span> <span class="params">(Notify method has pointer receiver)</span></span>
+</pre></td></tr></table></figure>
+
+<p>详细代码：<a href="http://play.golang.org/p/KG8-Qb7gqM" target="_blank">http://play.golang.org/p/KG8-Qb7gqM</a></p>
+<p>为什么编译器不考虑我们的值是实现该接口的类型？接口的调用规则是建立在这些方法的接受者和接口如何被调用的基础上。下面的是语言规范里定义的规则，这些规则用来说明是否我们一个类型的值或者指针<a href="http://golang.org/ref/spec#Method_sets" target="_blank">实现了</a>该接口：</p>
+<ul>
+<li>类型 <em> T 的可调用方法集包含接受者为 </em>T 或 T 的所有方法集</li>
+</ul>
+<p>这条规则说的是如果我们用来调用特定接口方法的接口变量是一个指针类型，那么方法的接受者可以是值类型也可以是指针类型。显然我们的例子不符合该规则，因为我们传入 <code>SendNotification</code> 函数的接口变量是一个值类型。</p>
+<ul>
+<li>类型 T 的可调用方法集包含接受者为 T 的所有方法</li>
+</ul>
+<p>这条规则说的是如果我们用来调用特定接口方法的接口变量是一个值类型，那么方法的接受者必须也是值类型该方法才可以被调用。显然我们的例子也不符合这条规则，因为我们 <code>Notify</code> 方法的接受者是一个指针类型。</p>
+<p>语言规范里只有这两条规则，我通过这两条规则得出了符合我们例子的规则：</p>
+<ul>
+<li>类型 T 的可调用方法集不包含接受者为 *T 的方法</li>
+</ul>
+<p>我们碰巧赶上了我推断出的这条规则，所以编译器会报错。<code>Notify</code> 方法使用指针类型作为接受者而我们却通过值类型来调用该方法。解决办法也很简单，我们只需要传入 <code>User</code> 值的地址到 <code>SendNotification</code> 函数就好了：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="code"><pre>func main() {
+  user := &User{
+    Name:  <span class="string">"AriesDevil"</span>,
+    Email: <span class="string">"ariesdevil@xxoo.com"</span>,
+  }
+  
+  SendNotification(user)
+}
+
+<span class="comment">//Output:</span>
+User: Sending User Email To AriesDevil&lt;ariesdevil<span class="annotation">@xxoo</span>.com&gt;
+</pre></td></tr></table></figure>
+
+<p>详细代码：<a href="http://play.golang.org/p/kEKzyTfLjA" target="_blank">http://play.golang.org/p/kEKzyTfLjA</a></p>
+<h2 id="嵌入类型">嵌入类型</h2>
+<p><a href="http://golang.org/ref/spec#Struct_types" target="_blank">结构体类型</a>可以包含匿名或者嵌入字段。也叫做嵌入一个类型。当我们嵌入一个类型到结构体中时，该类型的名字充当了嵌入字段的字段名。</p>
+<p>下面定义一个新的类型然后把我们的 <code>User</code> 类型嵌入进去：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+</pre></td><td class="code"><pre><span class="typedef"><span class="keyword">type</span> <span class="type">Admin</span> struct <span class="container">{
+  <span class="type">User</span>
+  <span class="type">Level</span>  <span class="title">string</span>
+}</span></span>
+</pre></td></tr></table></figure>
+
+<p>我们定义了一个新类型 <code>Admin</code> 然后把 <code>User</code> 类型嵌入进去，注意这个不叫继承而叫组合。 <code>User</code> 类型跟 <code>Admin</code> 类型没有关系。</p>
+<p>我们来改变一下 <code>main</code> 函数，创建一个 <code>Admin</code> 类型的变量并把变量的地址传入 <code>SendNotification</code> 函数中：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="code"><pre>func main() {
+  admin := &Admin{
+    User: User{
+      Name:  <span class="string">"AriesDevil"</span>,
+      Email: <span class="string">"ariesdevil@xxoo.com"</span>,
+    },
+    Level: <span class="string">"master"</span>,
+  }
+  
+  SendNotification(admin)
+}
+
+<span class="comment">// Output</span>
+User: Sending User Email To AriesDevil&lt;ariesdevil<span class="annotation">@xxoo</span>.com&gt;
+</pre></td></tr></table></figure>
+
+<p>详细代码：<a href="http://play.golang.org/p/ivzzzk78TC" target="_blank">http://play.golang.org/p/ivzzzk78TC</a></p>
+<p>事实证明，我们可以 <code>Admin</code> 类型的一个指针来调用 <code>SendNotification</code> 函数。现在 <code>Admin</code> 类型也通过来自嵌入的 <code>User</code> 类型的<strong><em>方法提升</em></strong>实现了该接口。</p>
+<p>如果 <code>Admin</code> 类型包含了 <code>User</code> 类型的字段和方法，那么它们在结构体中的关系是怎么样的呢？</p>
+<blockquote>
+<p>当我们<a href="http://golang.org/doc/effective_go.html#embedding" target="_blank">嵌入</a>一个类型，这个类型的方法就变成了外部类型的方法，但是当它被调用时，方法的接受者是内部类型(嵌入类型)，而非外部类型。— Effective Go</p>
+</blockquote>
+<p>因此嵌入类型的名字充当着字段名，同时嵌入类型作为内部类型存在，我们可以使用下面的调用方法：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+</pre></td><td class="code"><pre>admin<span class="preprocessor">.User</span><span class="preprocessor">.Notify</span>()
+
+// Output
+<span class="label">User:</span> Sending User Email To AriesDevil&lt;ariesdevil@xxoo<span class="preprocessor">.com</span>&gt;
+</pre></td></tr></table></figure>
+
+<p>详细代码：<a href="http://play.golang.org/p/0WL_5Q6mao" target="_blank">http://play.golang.org/p/0WL_5Q6mao</a></p>
+<p>这儿我们通过类型名称来访问内部类型的字段和方法。然而，这些字段和方法也同样被提升到了外部类型：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+</pre></td><td class="code"><pre>admin<span class="preprocessor">.Notify</span>()
+
+// Output
+<span class="label">User:</span> Sending User Email To AriesDevil&lt;ariesdevil@xxoo<span class="preprocessor">.com</span>&gt;
+</pre></td></tr></table></figure>
+
+<p>详细代码：<a href="http://play.golang.org/p/2snaaJojRo" target="_blank">http://play.golang.org/p/2snaaJojRo</a></p>
+<p>所以通过外部类型来调用 <code>Notify</code> 方法，本质上是内部类型的方法。</p>
+<p>下面是 Go 语言中内部类型<a href="http://golang.org/ref/spec#Method_sets" target="_blank">方法集提升</a>的规则：</p>
+<p>给定一个结构体类型 S 和一个命名为 T 的类型，方法提升像下面规定的这样被包含在结构体方法集中：</p>
+<ul>
+<li>如果 S 包含一个匿名字段 T，S 和 *S 的方法集都包含接受者为 T 的方法提升。</li>
+</ul>
+<p>这条规则说的是当我们嵌入一个类型，嵌入类型的接受者为值类型的方法将被提升，可以被外部类型的值和指针调用。</p>
+<ul>
+<li>对于 <em> S 类型的方法集，它包含接受者为 </em>T 的方法提升</li>
+</ul>
+<p>这条规则说的是当我们嵌入一个类型，嵌入类型的接受者为指针类型的方法将被提升，可以被外部类型的指针调用。</p>
+<ul>
+<li>如果 S 包含一个匿名字段 <em> T，S 和 </em> S 的方法集都包含接受者为 T 或者 *T 的方法提升</li>
+</ul>
+<p>这条规则说的是当我们嵌入一个类型的指针，嵌入类型的接受者为值类型或指针类型的方法将被提升，可以被外部类型的值或者指针调用。</p>
+<p>这就是语言规范里方法提升中仅有的三条规则，我根据这个推导出一条规则：</p>
+<ul>
+<li>如果 S 包含一个匿名字段 T，S 的方法集不包含接受者为 *T 的方法提升。</li>
+</ul>
+<p>这条规则说的是当我们嵌入一个类型，嵌入类型的接受者为指针的方法将不能被外部类型的值访问。这也是跟我们上面陈述的接口规则一致。</p>
+<h2 id="回答开头的问题">回答开头的问题</h2>
+<p>现在我们可以写程序来回答开头提出的两个问题了，首先我们让 <code>Admin</code> 类型实现 <code>Notifier</code> 接口：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="code"><pre>func (<span class="operator">a</span> *Admin) Notify() error {
+  <span class="built_in">log</span>.Printf(<span class="string">"Admin: Sending Admin Email To %s&lt;%s&gt;\n"</span>,
+      <span class="operator">a</span>.Name,
+      <span class="operator">a</span>.Email)
+      
+  <span class="constant">return</span> nil
+}
+</pre></td></tr></table></figure>
+
+<p><code>Admin</code> 类型实现的接口显示一条 admin 方面的信息。当我们使用 <code>Admin</code> 类型的指针去调用函数 <code>SendNotification</code> 时，这将帮助我们确定到底是哪个接口实现被调用了。</p>
+<p>现在创建一个 <code>Admin</code> 类型的值并把它的地址传入 <code>SendNotification</code> 函数，来看看发生了什么：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="code"><pre>func main() {
+  admin := &Admin{
+    User: User{
+      Name:  <span class="string">"AriesDevil"</span>,
+      Email: <span class="string">"ariesdevil@xxoo.com"</span>,
+    },
+    Level: <span class="string">"master"</span>,
+  }
+  
+  SendNotification(admin)
+}
+
+<span class="comment">// Output</span>
+Admin: Sending Admin Email To AriesDevil&lt;ariesdevil<span class="annotation">@xxoo</span>.com&gt;
+</pre></td></tr></table></figure>
+
+<p>详细代码：<a href="http://play.golang.org/p/JGhFaJnGpS" target="_blank">http://play.golang.org/p/JGhFaJnGpS</a></p>
+<p>预料之中，<code>Admin</code> 类型的接口实现被 <code>SendNotification</code> 函数调用。现在我们用外部类型来调用 <code>Notify</code> 方法会发生什么呢：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+</pre></td><td class="code"><pre>admin<span class="preprocessor">.Notify</span>()
+
+// Output
+<span class="label">Admin:</span> Sending Admin Email To AriesDevil&lt;ariesdevil@xxoo<span class="preprocessor">.com</span>&gt;
+</pre></td></tr></table></figure>
+
+<p>详细代码：<a href="http://play.golang.org/p/EGqK6DwBOi" target="_blank">http://play.golang.org/p/EGqK6DwBOi</a></p>
+<p>我们得到了 <code>Admin</code> 类型的接口实现的输出。<code>User</code> 类型的接口实现不被提升到外部类型了。</p>
+<p>现在我们有了足够的依据来回答问题了：</p>
+<ul>
+<li>编译器会因为我们同时有两个接口实现而报错吗？</li>
+</ul>
+<p>不会，因为当我们使用嵌入类型时，类型名充当了字段名。嵌入类型作为结构体的内部类型包含了自己的字段和方法，且具有唯一的名字。所以我们可以有同一接口的内部实现和外部实现。</p>
+<ul>
+<li>如果编译器接受这样的定义，那么当接口调用时编译器要怎么确定该使用哪个实现？</li>
+</ul>
+<p>如果外部类型包含了符合要求的接口实现，它将会被使用。否则，通过方法提升，任何内部类型的接口实现可以直接被外部类型使用。</p>
+<h2 id="总结">总结</h2>
+<p>在 Go 语言中，方法，接口和嵌入类型一起工作方式是独一无二的。这些特性可以帮助我们像面向对象那样组织结构然后达到同样的目的，并且没有其它复杂的东西。用本文中谈到的语言特色，我们可以以极少的代码来构建抽象和可伸缩性的框架。</p>
+]]></content>
+    
+    
+      <category term="golang" scheme="http://se77en.cc/tags/golang/"/>
+    
+      <category term="golang" scheme="http://se77en.cc/categories/golang/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Go 语言方法接受者类型的选择]]></title>
+    <link href="http://se77en.cc/2014/05/04/choose-whether-to-use-a-value-or-pointer-receiver-on-methods/"/>
+    <id>http://se77en.cc/2014/05/04/choose-whether-to-use-a-value-or-pointer-receiver-on-methods/</id>
+    <published>2014-05-04T00:00:00.000Z</published>
+    <updated>2014-05-04T13:31:56.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="概述">概述</h2>
+<p>很多人(特别是新手)在写 Go 语言代码时经常会问一个问题，那就是一个方法的接受者类型到底应该是值类型还是指针类型呢，Go 的 wiki 上对这点做了很好的解释，我来翻译一下。</p>
+<h2 id="何时使用值类型">何时使用值类型</h2>
+<ul>
+<li>如果接受者是一个 <code>map</code>，<code>func</code> 或者 <code>chan</code>，使用值类型(因为它们本身就是引用类型)。</li>
+<li>如果接受者是一个 <code>slice</code>，并且方法不执行 <code>reslice</code> 操作，也不重新分配内存给 <code>slice</code>，使用值类型。</li>
+<li>如果接受者是一个小的数组或者原生的值类型结构体类型(比如 <code>time.Time</code> 类型)，而且没有可修改的字段和指针，又或者接受者是一个简单地基本类型像是 <code>int</code> 和 <code>string</code>，使用值类型就好了。</li>
+</ul>
+<p>一个值类型的接受者可以减少一定数量的垃圾生成，如果一个值被传入一个值类型接受者的方法，一个栈上的拷贝会替代在堆上分配内存(但不是保证一定成功)，所以在没搞明白代码想干什么之前，别因为这个原因而选择值类型接受者。</p>
+<h2 id="何时使用指针类型">何时使用指针类型</h2>
+<ul>
+<li>如果方法需要修改接受者，接受者必须是指针类型。</li>
+<li>如果接受者是一个包含了 <code>sync.Mutex</code> 或者类似同步字段的结构体，接受者必须是指针，这样可以避免拷贝。</li>
+<li>如果接受者是一个大的结构体或者数组，那么指针类型接受者更有效率。(多大算大呢？假设把接受者的所有元素作为参数传给方法，如果你觉得参数有点多，那么它就是大)。</li>
+<li>从此方法中并发的调用函数和方法时，可以被修改吗？一个值类型的接受者会当方法调用时会创建一份拷贝，所以外部的修改不能作用到这个接受者上。如果修改必须被原始的接受者可见，那么接受者必须是指针类型。</li>
+<li>如果接受者是一个结构体，数组或者 <code>slice</code>，它们中任意一个元素是指针类型而且可能被修改，建议使用指针类型接受者，这样会增加程序的可读性</li>
+</ul>
+<p>当你看完这个还是有疑虑，还是不知道该使用哪种接受者，那么记住使用指针接受者。</p>
+<h2 id="关于接受者的命名">关于接受者的命名</h2>
+<p>社区约定的接受者命名是类型的一个或两个字母的缩写(像 <code>c</code> 或者 <code>cl</code> 对于 <code>Client</code>)。不要使用泛指的名字像是 <code>me</code>，<code>this</code> 或者 <code>self</code>，也不要使用过度描述的名字，最后，如果你在一个地方使用了 <code>c</code>，那么就不要在别的地方使用 <code>cl</code>。</p>
+]]></content>
+    
+    
+      <category term="golang" scheme="http://se77en.cc/tags/golang/"/>
+    
+      <category term="golang" scheme="http://se77en.cc/categories/golang/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Go 语言中的 new() 和 make() 的区别]]></title>
+    <link href="http://se77en.cc/2014/04/25/the-difference-between-function-new-and-make-in-golang/"/>
+    <id>http://se77en.cc/2014/04/25/the-difference-between-function-new-and-make-in-golang/</id>
+    <published>2014-04-25T00:00:00.000Z</published>
+    <updated>2014-05-05T15:01:09.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="概述">概述</h2>
+<p>Go 语言中的 <code>new</code> 和 <code>make</code> 一直是新手比较容易混淆的东西，咋一看很相似。不过解释两者之间的不同也非常容易。</p>
+<h2 id="new_的主要特性">new 的主要特性</h2>
+<p>首先 <code>new</code> 是内建函数，你可以从 <a href="http://golang.org/pkg/builtin/#new" target="_blank">http://golang.org/pkg/builtin/#new</a> 这儿看到它，它的定义也很简单：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre>func <span class="keyword">new</span>(<span class="keyword">Type</span>) *<span class="keyword">Type</span>
+</pre></td></tr></table></figure>
+
+<p>官方文档对于它的描述是：</p>
+<blockquote>
+<p>内建函数 <code>new</code> 用来分配内存，它的第一个参数是一个类型，不是一个值，它的返回值是一个指向新分配类型零值的指针</p>
+</blockquote>
+<p>根据这段描述，我们可以自己实现一个类似 <code>new</code> 的功能：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+</pre></td><td class="code"><pre><span class="keyword">func</span> newInt() *<span class="typename">int</span> {
+  <span class="keyword">var</span> i <span class="typename">int</span>
+  <span class="keyword">return</span> &i
+}
+
+someInt := newInt()
+</pre></td></tr></table></figure>
+
+<p>我们这个函数的功能跟 <code>someInt := new(int)</code> 一模一样。所以在我们自己定义 new 开头的函数时，出于约定也应该返回类型的指针。</p>
+<h2 id="make_的主要特性">make 的主要特性</h2>
+<p><code>make</code> 也是内建函数，你可以从 <a href="http://golang.org/pkg/builtin/#make" target="_blank">http://golang.org/pkg/builtin/#make</a> 这儿看到它，它的定义比 <code>new</code> 多了一个参数，返回值也不同：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre>func make(<span class="keyword">Type</span>, size IntegerType) <span class="keyword">Type</span>
+</pre></td></tr></table></figure>
+
+<p>官方文档对于它的描述是：</p>
+<blockquote>
+<p>内建函数 <code>make</code> 用来为 <code>slice</code>，<code>map</code> 或 <code>chan</code> 类型分配内存和初始化一个对象(<strong>注意</strong>：只能用在这三种类型上)，跟 <code>new</code> 类似，第一个参数也是一个类型而不是一个值，跟 <code>new</code> 不同的是，<code>make</code> 返回类型的引用而不是指针，而返回值也依赖于具体传入的类型，具体说明如下</p>
+</blockquote>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="code"><pre>Slice: 第二个参数 <span class="keyword">size</span> 指定了它的长度，它的容量和长度相同。
+你可以传入第三个参数来指定不同的容量值，但必须不能比长度值小。
+比如 make([]<span class="keyword">int</span>, <span class="number">0</span>, <span class="number">10</span>)
+
+Map: 根据 <span class="keyword">size</span> 大小来初始化分配内存，不过分配后的 map 长度为 <span class="number">0</span>，如果 <span class="keyword">size</span> 被忽略了，那么会在初始化分配内存时分配一个小尺寸的内存
+
+Channel: 管道缓冲区依据缓冲区容量被初始化。如果容量为 <span class="number">0</span> 或者忽略容量，管道是没有缓冲区的
+</pre></td></tr></table></figure>
+
+<h2 id="总结">总结</h2>
+<p><code>new</code> 的作用是初始化一个指向类型的指针(*T)，<code>make</code> 的作用是为 <code>slice</code>，<code>map</code> 或 <code>chan</code> 初始化并返回引用(T)。</p>
+]]></content>
+    
+    
+      <category term="golang" scheme="http://se77en.cc/tags/golang/"/>
+    
+      <category term="golang" scheme="http://se77en.cc/categories/golang/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[基于 Martini 的跨域资源共享(CORS)]]></title>

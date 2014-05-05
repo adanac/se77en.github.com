@@ -86,7 +86,7 @@
     </p>
   <p class="article-time">
     <time datetime="2014-05-05T00:00:00.000Z" itemprop="datePublished">5月 5 2014</time>
-    更新日期:<time datetime="2014-05-04T13:35:13.000Z" itemprop="dateModified">5月 4 2014</time>
+    更新日期:<time datetime="2014-05-05T15:10:31.000Z" itemprop="dateModified">5月 5 2014</time>
     
   </p>
 </header>
@@ -162,7 +162,7 @@ alimon := &User{<span class="string">"A-limon"</span>, <span class="string">"ali
 alimon.Notify()
 </pre></td></tr></table></figure>
 
-<p>如果你不清楚到底什么时候该使用值，什么时候该使用指针作为接受者，你可以去看一下这个规则集合xxx。这篇文章同时还包含了社区约定的接受者该如何命名。</p>
+<p>如果你不清楚到底什么时候该使用值，什么时候该使用指针作为接受者，你可以去看一下<a href="http://se77en.cc/2014/05/04/choose-whether-to-use-a-value-or-pointer-receiver-on-methods/">这篇介绍</a>。这篇文章同时还包含了社区约定的接受者该如何命名。</p>
 <h2 id="接口">接口</h2>
 <p>Go 语言中的<a href="http://golang.org/doc/effective_go.html#interfaces" target="_blank">接口</a>很特别，而且提供了难以置信的一系列灵活性和抽象性。它们指定一个特定类型的值和指针表现为特定的方式。从语言角度看，接口是一种类型，它指定一个<a href="http://golang.org/ref/spec#Method_sets" target="_blank">方法集</a>，所有方法为<a href="http://golang.org/ref/spec#Interface_types" target="_blank">接口类型</a>就被认为是该接口。</p>
 <p>下面定义一个接口：</p>
@@ -232,16 +232,16 @@ User</span> <span class="title">does</span> <span class="title">not</span> <span
 <p>详细代码：<a href="http://play.golang.org/p/KG8-Qb7gqM" target="_blank">http://play.golang.org/p/KG8-Qb7gqM</a></p>
 <p>为什么编译器不考虑我们的值是实现该接口的类型？接口的调用规则是建立在这些方法的接受者和接口如何被调用的基础上。下面的是语言规范里定义的规则，这些规则用来说明是否我们一个类型的值或者指针<a href="http://golang.org/ref/spec#Method_sets" target="_blank">实现了</a>该接口：</p>
 <ul>
-<li>类型 <em> T 的可调用方法集包含接受者为 </em>T 或 T 的所有方法集</li>
+<li>类型 <code>*T</code> 的可调用方法集包含接受者为 <code>*T</code> 或 <code>T</code> 的所有方法集</li>
 </ul>
 <p>这条规则说的是如果我们用来调用特定接口方法的接口变量是一个指针类型，那么方法的接受者可以是值类型也可以是指针类型。显然我们的例子不符合该规则，因为我们传入 <code>SendNotification</code> 函数的接口变量是一个值类型。</p>
 <ul>
-<li>类型 T 的可调用方法集包含接受者为 T 的所有方法</li>
+<li>类型 <code>T</code> 的可调用方法集包含接受者为 <code>T</code> 的所有方法</li>
 </ul>
 <p>这条规则说的是如果我们用来调用特定接口方法的接口变量是一个值类型，那么方法的接受者必须也是值类型该方法才可以被调用。显然我们的例子也不符合这条规则，因为我们 <code>Notify</code> 方法的接受者是一个指针类型。</p>
 <p>语言规范里只有这两条规则，我通过这两条规则得出了符合我们例子的规则：</p>
 <ul>
-<li>类型 T 的可调用方法集不包含接受者为 *T 的方法</li>
+<li>类型 <code>T</code> 的可调用方法集不包含接受者为 <code>*T</code> 的方法</li>
 </ul>
 <p>我们碰巧赶上了我推断出的这条规则，所以编译器会报错。<code>Notify</code> 方法使用指针类型作为接受者而我们却通过值类型来调用该方法。解决办法也很简单，我们只需要传入 <code>User</code> 值的地址到 <code>SendNotification</code> 函数就好了：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
@@ -346,22 +346,22 @@ User: Sending User Email To AriesDevil&lt;ariesdevil<span class="annotation">@xx
 <p>详细代码：<a href="http://play.golang.org/p/2snaaJojRo" target="_blank">http://play.golang.org/p/2snaaJojRo</a></p>
 <p>所以通过外部类型来调用 <code>Notify</code> 方法，本质上是内部类型的方法。</p>
 <p>下面是 Go 语言中内部类型<a href="http://golang.org/ref/spec#Method_sets" target="_blank">方法集提升</a>的规则：</p>
-<p>给定一个结构体类型 S 和一个命名为 T 的类型，方法提升像下面规定的这样被包含在结构体方法集中：</p>
+<p>给定一个结构体类型 <code>S</code> 和一个命名为 <code>T</code> 的类型，方法提升像下面规定的这样被包含在结构体方法集中：</p>
 <ul>
-<li>如果 S 包含一个匿名字段 T，S 和 *S 的方法集都包含接受者为 T 的方法提升。</li>
+<li>如果 <code>S</code> 包含一个匿名字段 <code>T</code>，<code>S</code> 和 <code>*S</code> 的方法集都包含接受者为 <code>T</code> 的方法提升。</li>
 </ul>
 <p>这条规则说的是当我们嵌入一个类型，嵌入类型的接受者为值类型的方法将被提升，可以被外部类型的值和指针调用。</p>
 <ul>
-<li>对于 <em> S 类型的方法集，它包含接受者为 </em>T 的方法提升</li>
+<li>对于 <code>*S</code> 类型的方法集，它包含接受者为 <code>*T</code> 的方法提升</li>
 </ul>
 <p>这条规则说的是当我们嵌入一个类型，嵌入类型的接受者为指针类型的方法将被提升，可以被外部类型的指针调用。</p>
 <ul>
-<li>如果 S 包含一个匿名字段 <em> T，S 和 </em> S 的方法集都包含接受者为 T 或者 *T 的方法提升</li>
+<li>如果 <code>S</code> 包含一个匿名字段 <code>*T</code>，<code>S</code> 和 <code>*S</code> 的方法集都包含接受者为 <code>T</code> 或者 <code>*T</code> 的方法提升</li>
 </ul>
 <p>这条规则说的是当我们嵌入一个类型的指针，嵌入类型的接受者为值类型或指针类型的方法将被提升，可以被外部类型的值或者指针调用。</p>
 <p>这就是语言规范里方法提升中仅有的三条规则，我根据这个推导出一条规则：</p>
 <ul>
-<li>如果 S 包含一个匿名字段 T，S 的方法集不包含接受者为 *T 的方法提升。</li>
+<li>如果 <code>S</code> 包含一个匿名字段 <code>T</code>，<code>S</code> 的方法集不包含接受者为 <code>*T</code> 的方法提升。</li>
 </ul>
 <p>这条规则说的是当我们嵌入一个类型，嵌入类型的接受者为指针的方法将不能被外部类型的值访问。这也是跟我们上面陈述的接口规则一致。</p>
 <h2 id="回答开头的问题">回答开头的问题</h2>

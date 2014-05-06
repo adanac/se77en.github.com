@@ -86,7 +86,7 @@
     </p>
   <p class="article-time">
     <time datetime="2014-05-05T00:00:00.000Z" itemprop="datePublished">5月 5 2014</time>
-    更新日期:<time datetime="2014-05-05T15:22:49.000Z" itemprop="dateModified">5月 5 2014</time>
+    更新日期:<time datetime="2014-05-06T14:32:11.000Z" itemprop="dateModified">5月 6 2014</time>
     
   </p>
 </header>
@@ -352,9 +352,9 @@ User: Sending User Email To AriesDevil&lt;ariesdevil<span class="annotation">@xx
 </ul>
 <p>这条规则说的是当我们嵌入一个类型，嵌入类型的接受者为值类型的方法将被提升，可以被外部类型的值和指针调用。</p>
 <ul>
-<li>对于 <code>*S</code> 类型的方法集，它包含接受者为 <code>*T</code> 的方法提升</li>
+<li>对于 <code>*S</code> 类型的方法集包含接受者为 <code>*T</code> 的方法提升</li>
 </ul>
-<p>这条规则说的是当我们嵌入一个类型，嵌入类型的接受者为指针类型的方法将被提升，可以被外部类型的指针调用。</p>
+<p>这条规则说的是当我们嵌入一个类型，可以被外部类型的指针调用的方法集只有嵌入类型的接受者为指针类型的方法集，也就是说，当外部类型使用指针调用内部类型的方法时，只有接受者为指针类型的内部类型方法集将被提升。</p>
 <ul>
 <li>如果 <code>S</code> 包含一个匿名字段 <code>*T</code>，<code>S</code> 和 <code>*S</code> 的方法集都包含接受者为 <code>T</code> 或者 <code>*T</code> 的方法提升</li>
 </ul>

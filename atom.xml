@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://se77en.cc/"/>
-  <updated>2014-05-06T14:37:11.674Z</updated>
+  <updated>2014-05-07T15:30:32.027Z</updated>
   <id>http://se77en.cc/</id>
   
   <author>
@@ -481,7 +481,7 @@ Channel: 管道缓冲区依据缓冲区容量被初始化。如果容量为 <spa
     <link href="http://se77en.cc/2014/04/09/cors-with-martini-and-golang/"/>
     <id>http://se77en.cc/2014/04/09/cors-with-martini-and-golang/</id>
     <published>2014-04-09T00:00:00.000Z</published>
-    <updated>2014-04-09T06:55:47.000Z</updated>
+    <updated>2014-05-07T15:29:59.000Z</updated>
     <content type="html"><![CDATA[<h2 id="概述">概述</h2>
 <p><a href="http://www.w3.org/TR/cors/" target="_blank">CORS</a> 的全称是 Cross-Origin Resource Sharing，即：跨域资源共享</p>
 <p>根据我的理解，就是马伊琍和文章结婚了，姚笛就不能和文章结了，如果还想在一起，那就得采用一定的方法，这个方法就是跨域，哦，不对，是当第三者:)</p>
@@ -932,7 +932,7 @@ func main() {
 }
 </pre></td></tr></table></figure>
 
-<p>可以看到 Martini 的 cors 插件已经为我们做了很多工作，详细说明请参见 <a href="https://github.com/martini-contrib/cors#usage" target="_blank">cors 文档</a>。</p>
+<p>我们使用了 Martini 的一个叫 cors 的插件，可以看到 Martini 的 cors 插件已经为我们做了很多工作，详细说明请参见 <a href="https://github.com/martini-contrib/cors#usage" target="_blank">cors 文档</a>。</p>
 <h2 id="感谢">感谢</h2>
 <ol>
 <li><a href="http://en.wikipedia.org/wiki/Cross-origin_resource_sharing" target="_blank">http://en.wikipedia.org/wiki/Cross-origin_resource_sharing</a></li>

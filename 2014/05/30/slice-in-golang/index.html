@@ -4,16 +4,18 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>AriesDevil&#39;s Blog</title>
+    <title>Go 语言中的 Slice | AriesDevil&#39;s Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
     
     <meta name="author" content="Damon Zhao">
+    
+    <meta name="description" content="概述">
     
     
     
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="se77en_cc" />
-    <meta name="twitter:title" content="AriesDevil&#39;s Blog" />
+    <meta name="twitter:title" content="Go 语言中的 Slice | AriesDevil&#39;s Blog" />
       
     
     
@@ -65,149 +67,83 @@
 
     </header>
     <div id="container">
-      <div id="main">
-
-  <section class="post" itemscope itemprop="blogPost">
-  
-    <a href="/2014/05/30/slice-in-golang/" title="Go 语言中的 Slice" itemprop="url">
-  
-    <h1 itemprop="name">Go 语言中的 Slice</h1>
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
     
-     
-           <p itemprop="description" >概述</p>
-        
+      <a href="/2014/05/30/slice-in-golang/" title="Go 语言中的 Slice" itemprop="url">Go 语言中的 Slice</a>
+  </h1>
+  <p class="article-author">By
     
+      <a href="https://plus.google.com//u/0/102193487255973478115?rel=author" title="Damon Zhao" target="_blank" itemprop="author">Damon Zhao</a>
+    </p>
+  <p class="article-time">
     <time datetime="2014-05-30T00:00:00.000Z" itemprop="datePublished">5月 30 2014</time>
-  </a>
-</section>
+    更新日期:<time datetime="2014-05-29T12:44:50.000Z" itemprop="dateModified">5月 29 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#概述"><span class="toc-number">1.</span> <span class="toc-text">概述</span></a></li></ol>
+		</div>
+		
+		<h2 id="概述">概述</h2>
+  
+	</div>
+		<footer class="article-footer clearfix">
 
-  <section class="post" itemscope itemprop="blogPost">
+  <div class="article-tags">
   
-    <a href="/2014/05/05/methods-interfaces-and-embedded-types-in-golang/" title="Go 语言中的方法，接口和嵌入类型" itemprop="url">
-  
-    <h1 itemprop="name">Go 语言中的方法，接口和嵌入类型</h1>
-    
-     
-           <p itemprop="description" >概述
-在 Go 语言中，如果一个结构体和一个嵌入字段同时实现了相同的接口会发生什么呢？我们猜一下，可能有两个问题：
+  <span></span> <a href="/tags/golang/">golang</a>
+  </div>
 
-编译器会因为我们同时有两个接口实现而报错吗？
-如果编译器接受这样的定义，那么当接口调用时编译器要怎么确定该使用哪个实现？
 
-在写了一些测试代码并认真深入的读了一下</p>
-        
-    
-    <time datetime="2014-05-05T00:00:00.000Z" itemprop="datePublished">5月 5 2014</time>
-  </a>
-</section>
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/golang/">golang</a>
+</div>
 
-  <section class="post" itemscope itemprop="blogPost">
-  
-    <a href="/2014/05/04/choose-whether-to-use-a-value-or-pointer-receiver-on-methods/" title="Go 语言方法接受者类型的选择" itemprop="url">
-  
-    <h1 itemprop="name">Go 语言方法接受者类型的选择</h1>
-    
-     
-           <p itemprop="description" >概述
-很多人(特别是新手)在写 Go 语言代码时经常会问一个问题，那就是一个方法的接受者类型到底应该是值类型还是指针类型呢，Go 的 wiki 上对这点做了很好的解释，我来翻译一下。
-何时使用值类型
 
-如果接受者是一个 map，func 或者 chan，使用值类型(因为它们本身就</p>
-        
-    
-    <time datetime="2014-05-04T00:00:00.000Z" itemprop="datePublished">5月 4 2014</time>
-  </a>
-</section>
 
-  <section class="post" itemscope itemprop="blogPost">
-  
-    <a href="/2014/04/25/the-difference-between-function-new-and-make-in-golang/" title="Go 语言中的 new() 和 make() 的区别" itemprop="url">
-  
-    <h1 itemprop="name">Go 语言中的 new() 和 make() 的区别</h1>
-    
-     
-      <p itemprop="description" >详解关于Go 语言中 new() 和 make() 的区别</p>
-      
-    
-    <time datetime="2014-04-25T00:00:00.000Z" itemprop="datePublished">4月 25 2014</time>
-  </a>
-</section>
+<div class="article-share" id="share">
 
-  <section class="post" itemscope itemprop="blogPost">
-  
-    <a href="/2014/04/09/cors-with-martini-and-golang/" title="基于 Martini 的跨域资源共享(CORS)" itemprop="url">
-  
-    <h1 itemprop="name">基于 Martini 的跨域资源共享(CORS)</h1>
-    
-     
-      <p itemprop="description" >跨域资源共享的简单介绍以及在 Go 语言中的实现</p>
-      
-    
-    <time datetime="2014-04-09T00:00:00.000Z" itemprop="datePublished">4月 9 2014</time>
-  </a>
-</section>
-
-  <section class="post" itemscope itemprop="blogPost">
-  
-    <a href="/2014/04/08/share-by-communicating-the-concurrency-slogan-in-golang/" title="Go 语言的并发模型--通过通信来共享内存" itemprop="url">
-  
-    <h1 itemprop="name">Go 语言的并发模型--通过通信来共享内存</h1>
-    
-     
-      <p itemprop="description" >通过具体事例来解释 Go 语言的并发模型，并与传统的通过共享内存来通信的机制进行比较</p>
-      
-    
-    <time datetime="2014-04-08T00:00:00.000Z" itemprop="datePublished">4月 8 2014</time>
-  </a>
-</section>
-
-  <section class="post" itemscope itemprop="blogPost">
-  
-    <a href="/2014/02/05/koa-zero-to-todo-list-translation/" title="使用 Koa 从零打造 TODO 应用" itemprop="url">
-  
-    <h1 itemprop="name">使用 Koa 从零打造 TODO 应用</h1>
-    
-     
-      <p itemprop="description" >使用 Koa 框架写的一个 TODO 应用</p>
-      
-    
-    <time datetime="2014-02-05T00:00:00.000Z" itemprop="datePublished">2月 5 2014</time>
-  </a>
-</section>
-
-  <section class="post" itemscope itemprop="blogPost">
-  
-    <a href="/2014/01/20/iterators-and-generators-translation/" title="JavaScript 迭代器和生成器" itemprop="url">
-  
-    <h1 itemprop="name">JavaScript 迭代器和生成器</h1>
-    
-     
-      <p itemprop="description" >来自 Mozilla Developer Network 介绍迭代器和生成器的官方文档</p>
-      
-    
-    <time datetime="2014-01-20T00:00:00.000Z" itemprop="datePublished">1月 20 2014</time>
-  </a>
-</section>
-
-  <section class="post" itemscope itemprop="blogPost">
-  
-    <a href="/2013/06/27/goodbye-node-forever-hello-pm2-translation/" title="告别node-forever,拥抱PM2" itemprop="url">
-  
-    <h1 itemprop="name">告别node-forever,拥抱PM2</h1>
-    
-     
-           <p itemprop="description" >原文地址:Goodbye node-forever,hello PM2
-
-devo.ps团队对JavaScript的迷恋已经不是什么秘密了;node.js作为服务器端,AngularJS作为客户端,某种程度上说,我们的堆栈是用它建成的.我们构建静态客户端和RESTful JSON</p>
-        
-    
-    <time datetime="2013-06-27T06:43:36.000Z" itemprop="datePublished">6月 27 2013</time>
-  </a>
-</section>
-
+  <div data-url="http://se77en.cc/2014/05/30/slice-in-golang/" data-title="Go 语言中的 Slice | AriesDevil&#39;s Blog" data-tsina="3266027140" class="share clearfix">
+  </div>
 
 </div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2014/05/05/methods-interfaces-and-embedded-types-in-golang/"  title="Go 语言中的方法，接口和嵌入类型">
+ <strong>NEXT:</strong><br/> 
+ <span>Go 语言中的方法，接口和嵌入类型
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section class="comment">
+	<div class="ds-thread"></div>
+</section>
+
+</div>  
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#概述"><span class="toc-number">1.</span> <span class="toc-text">概述</span></a></li></ol>
+  </div>
 
 <div id="asidepart">
 <div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
@@ -354,6 +290,8 @@ $(document).ready(function(){
       m.removeClass('moveMain');
       a.css('display', 'block').removeClass('fadeOut');
       o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
         
     }
   });
@@ -373,7 +311,79 @@ $(document).ready(function(){
 });
 </script>
 
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
 
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"ariesdevil"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
 
 
 
@@ -389,4 +399,4 @@ ga('send', 'pageview');
 
 
   </body>
- </html>
+</html>

@@ -83,7 +83,7 @@
     </p>
   <p class="article-time">
     <time datetime="2014-06-30T00:00:00.000Z" itemprop="datePublished">6月 30 2014</time>
-    更新日期:<time datetime="2014-07-03T16:21:45.000Z" itemprop="dateModified">7月 4 2014</time>
+    更新日期:<time datetime="2014-07-03T16:29:28.000Z" itemprop="dateModified">7月 4 2014</time>
     
   </p>
 </header>
@@ -418,8 +418,20 @@ newSlice[1] = 35
 
 <p>改变 newSlice 的第二个元素的值，也会同样改变 slice 的第三个元素的值。</p>
 <p>一个 slice 只能访问它长度范围内的索引，试图访问超出长度范围的索引会产生一个运行时错误。容量只可以用来增长，它只有被合并到长度才可以被访问：</p>
-<p>```<br>slice := []int{10, 20, 30, 40, 50}<br>newSlice := slice[1:3]<br>newSlice[3] = 45</p>
-<p>Runtime Exception:<br>panic: runtime error: index out of range<br>```</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+</pre></td><td class="code"><pre>slice := []int<span class="comment">{10, 20, 30, 40, 50}</span>
+newSlice := slice[<span class="number">1</span>:<span class="number">3</span>]
+newSlice[<span class="number">3</span>] = <span class="number">45</span>
+
+Runtime Exception:
+panic: runtime error: <span class="keyword">index</span> <span class="keyword">out</span> <span class="keyword">of</span> range
+</pre></td></tr></table></figure>
+
 <p>容量可以被合并到长度里，通过内建的 <code>append</code> 函数。</p>
   
 	</div>

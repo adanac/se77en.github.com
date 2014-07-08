@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://se77en.cc/"/>
-  <updated>2014-07-08T09:01:54.840Z</updated>
+  <updated>2014-07-08T09:03:33.343Z</updated>
   <id>http://se77en.cc/</id>
   
   <author>
@@ -15,11 +15,11 @@
   <generator uri="http://zespia.tw/hexo/">Hexo</generator>
   
   <entry>
-    <title><![CDATA[Go 语言中的 Array，Slice 和 Map]]></title>
-    <link href="http://se77en.cc/2014/06/30/array-slice-and-map-in-golang/"/>
-    <id>http://se77en.cc/2014/06/30/array-slice-and-map-in-golang/</id>
+    <title><![CDATA[Go 语言中的 Array，Slice Map 和 Set]]></title>
+    <link href="http://se77en.cc/2014/06/30/array-slice-map-and-set-in-golang/"/>
+    <id>http://se77en.cc/2014/06/30/array-slice-map-and-set-in-golang/</id>
     <published>2014-06-30T00:00:00.000Z</published>
-    <updated>2014-07-08T09:01:02.000Z</updated>
+    <updated>2014-07-08T09:02:57.000Z</updated>
     <content type="html"><![CDATA[<h2 id="Array(数组)">Array(数组)</h2>
 <h3 id="内部机制">内部机制</h3>
 <p>在 Go 语言中数组是固定长度的数据类型，它包含相同类型的连续的元素，这些元素可以是内建类型，像数字和字符串，也可以是结构类型，元素可以通过唯一的索引值访问，从 0 开始。</p>

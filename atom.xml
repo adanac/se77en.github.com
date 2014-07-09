@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://se77en.cc/"/>
-  <updated>2014-07-08T09:04:33.596Z</updated>
+  <updated>2014-07-09T09:11:47.148Z</updated>
   <id>http://se77en.cc/</id>
   
   <author>
@@ -13,6 +13,24 @@
   </author>
   
   <generator uri="http://zespia.tw/hexo/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[Go 语言中的模板(Template)]]></title>
+    <link href="http://se77en.cc/2014/07/07/template-in-golang/"/>
+    <id>http://se77en.cc/2014/07/07/template-in-golang/</id>
+    <published>2014-07-07T00:00:00.000Z</published>
+    <updated>2014-07-08T09:11:25.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="概述">概述</h2>
+]]></content>
+    
+    
+      <category term="golang" scheme="http://se77en.cc/tags/golang/"/>
+    
+      <category term="template" scheme="http://se77en.cc/tags/template/"/>
+    
+      <category term="golang" scheme="http://se77en.cc/categories/golang/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[Go 语言中的 Array，Slice，Map 和 Set]]></title>
@@ -1938,7 +1956,7 @@ func main() {
     <link href="http://se77en.cc/2014/04/08/share-by-communicating-the-concurrency-slogan-in-golang/"/>
     <id>http://se77en.cc/2014/04/08/share-by-communicating-the-concurrency-slogan-in-golang/</id>
     <published>2014-04-08T00:00:00.000Z</published>
-    <updated>2014-04-09T06:27:40.000Z</updated>
+    <updated>2014-07-09T09:11:20.000Z</updated>
     <content type="html"><![CDATA[<h2 id="概述">概述</h2>
 <p>我一直在找一种好的方法来解释 go 语言的<a href="http://golang.org/doc/effective_go.html#concurrency" target="_blank">并发模型</a>：</p>
 <blockquote>
@@ -2092,7 +2110,7 @@ func main() {
 11
 </pre></td><td class="code"><pre><span class="tag">func</span> <span class="tag">main</span>() <span class="rules">{
   <span class="rule"><span class="attribute">balance </span>:<span class="value">= <span class="number">80</span>
-  b := bank.<span class="function">NewBank(bank.<span class="function">NewSimpleAccount(balance)</span>)</span>
+  b := <span class="function">NewBank(bank.<span class="function">NewSimpleAccount(balance)</span>)</span>
   
   fmt.<span class="function">Println(<span class="string">"初始化余额"</span>, b.<span class="function">Balance()</span>)</span>
   
@@ -2136,7 +2154,7 @@ func main() {
 18
 </pre></td><td class="code"><pre><span class="keyword">func</span> main() {
   balance :=<span class="number"> 80</span>
-  b := bank.NewBank(bank.NewSimpleAccount(balance))
+  b := NewBank(bank.NewSimpleAccount(balance))
   
   fmt.Println(<span class="string">"初始化余额"</span>, b.Balance())
   
@@ -2288,7 +2306,7 @@ func (acc *LockingAccount) Balance() int {
 18
 </pre></td><td class="code"><pre><span class="keyword">func</span> main() {
   balance :=<span class="number"> 80</span>
-  b := bank.NewBank(bank.NewLockingAccount(balance))
+  b := NewBank(bank.NewLockingAccount(balance))
   
   fmt.Println(<span class="string">"初始化余额"</span>, b.Balance())
   
@@ -2471,7 +2489,7 @@ func (acc *LockingAccount) Balance() int {
 <p><code>ConcurrentAccount</code> 同样封装了 <code>SimpleAccount</code> ，然后增加了通信通道</p>
 <p>调用代码和加锁版本的一样，这里就不写了，唯一不一样的就是初始化银行账号的时候：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
-</pre></td><td class="code"><pre>b := bank<span class="preprocessor">.NewBank</span>(bank<span class="preprocessor">.NewConcurrentAccount</span>(balance))
+</pre></td><td class="code"><pre><span class="attribute">b :</span>=<span class="string"> NewBank(bank.NewConcurrentAccount(balance))</span>
 </pre></td></tr></table></figure>
 
 <p>运行产生的结果和加锁版本一样：</p>
@@ -2601,8 +2619,8 @@ func (acc *LockingAccount) Balance() int {
 <p>控制流程每次只处理一个 <code>事件</code>。这也就是为什么除了描述出来的这些以外，第2-4步没有别的操作执行。</p>
 <h2 id="总结">总结</h2>
 <p>这篇博客描述了问题以及问题的解决办法，但那时没有深入去探究不同解决办法的优缺点。</p>
-<p>下一篇中会详尽说明并且会改进解决方案。</p>
-<p>请毫无顾忌的指出我的错误！</p>
+<p>其实这篇文章的例子更适合用 mutex，因为这样代码更加清晰。</p>
+<p>最后，请毫无顾忌的指出我的错误！</p>
 ]]></content>
     
     

@@ -113,7 +113,7 @@ type P">
     </p>
   <p class="article-time">
     <time datetime="2014-07-14T00:00:00.000Z" itemprop="datePublished">7月 14 2014</time>
-    更新日期:<time datetime="2014-07-16T07:47:14.000Z" itemprop="dateModified">7月 16 2014</time>
+    更新日期:<time datetime="2014-07-16T07:49:31.000Z" itemprop="dateModified">7月 16 2014</time>
     
   </p>
 </header>
@@ -183,7 +183,7 @@ type P">
 <span class="comment">// 还回去</span>
 <span class="keyword">func</span> (p *Pool) Return(cl *Client) {
   <span class="keyword">select</span> {
-  <span class="keyword">case</span> p.pool &lt;- c:
+  <span class="keyword">case</span> p.pool &lt;- cl:
   <span class="keyword">default</span>:
     <span class="comment">// let it go, let it go...</span>
   }

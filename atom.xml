@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://se77en.cc/"/>
-  <updated>2014-07-09T09:11:47.148Z</updated>
+  <updated>2014-07-16T07:47:40.992Z</updated>
   <id>http://se77en.cc/</id>
   
   <author>
@@ -13,6 +13,92 @@
   </author>
   
   <generator uri="http://zespia.tw/hexo/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[使用 buffered channel 实现线程安全的 pool]]></title>
+    <link href="http://se77en.cc/2014/07/14/implementation-a-pool-with-buffered-channel-in-golang/"/>
+    <id>http://se77en.cc/2014/07/14/implementation-a-pool-with-buffered-channel-in-golang/</id>
+    <published>2014-07-14T00:00:00.000Z</published>
+    <updated>2014-07-16T07:47:14.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="概述">概述</h2>
+<p>我们已经知道 Go 语言提供了 sync.Pool，但是做的不怎么好，所以有必要自己来实现一个 pool。</p>
+<h2 id="给我看代码">给我看代码</h2>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+</pre></td><td class="code"><pre><span class="keyword">type</span> Pool <span class="keyword">struct</span> {
+  pool <span class="keyword">chan</span> *Client
+}
+
+<span class="comment">// 创建一个新的 pool</span>
+<span class="keyword">func</span> NewPool(max <span class="typename">int</span>) *Pool {
+  <span class="keyword">return</span> &Pool{
+    pool: <span class="built_in">make</span>(<span class="keyword">chan</span> *Client, max),
+  }
+}
+
+<span class="comment">// 从 pool 里借一个 Client</span>
+<span class="keyword">func</span> (p *Pool) Borrow() *Client {
+  <span class="keyword">var</span> cl *Client
+  <span class="keyword">select</span> {
+  <span class="keyword">case</span> cl = &lt;-p.pool:
+  <span class="keyword">default</span>:
+    cl = newClient()
+  }
+  <span class="keyword">return</span> cl
+}
+
+<span class="comment">// 还回去</span>
+<span class="keyword">func</span> (p *Pool) Return(cl *Client) {
+  <span class="keyword">select</span> {
+  <span class="keyword">case</span> p.pool &lt;- c:
+  <span class="keyword">default</span>:
+    <span class="comment">// let it go, let it go...</span>
+  }
+}
+</pre></td></tr></table></figure>
+
+<h2 id="总结">总结</h2>
+<p>现在<strong><em>不要</em></strong>使用 <code>sync.Pool</code></p>
+]]></content>
+    
+    
+      <category term="golang" scheme="http://se77en.cc/tags/golang/"/>
+    
+      <category term="pool" scheme="http://se77en.cc/tags/pool/"/>
+    
+      <category term="channel" scheme="http://se77en.cc/tags/channel/"/>
+    
+      <category term="golang" scheme="http://se77en.cc/categories/golang/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[Go 语言中的模板(Template)]]></title>

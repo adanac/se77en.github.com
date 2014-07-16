@@ -4,23 +4,51 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>Go 语言方法接受者类型的选择 | AriesDevil&#39;s Blog</title>
+    <title>使用 buffered channel 实现线程安全的 pool | AriesDevil&#39;s Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
     
     <meta name="author" content="Damon Zhao">
     
     <meta name="description" content="概述
-很多人(特别是新手)在写 Go 语言代码时经常会问一个问题，那就是一个方法的接受者类型到底应该是值类型还是指针类型呢，Go 的 wiki 上对这点做了很好的解释，我来翻译一下。
-何时使用值类型
-
-如果接受者是一个 map，func 或者 chan，使用值类型(因为它们本身就是引用类型)。
-如果">
+我们已经知道 Go 语言提供了 sync.Pool，但是做的不怎么好，所以有必要自己来实现一个 pool。
+给我看代码
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+type P">
     
     
     
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="se77en_cc" />
-    <meta name="twitter:title" content="Go 语言方法接受者类型的选择 | AriesDevil&#39;s Blog" />
+    <meta name="twitter:title" content="使用 buffered channel 实现线程安全的 pool | AriesDevil&#39;s Blog" />
       
     
     
@@ -77,15 +105,15 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2014/05/04/choose-whether-to-use-a-value-or-pointer-receiver-on-methods/" title="Go 语言方法接受者类型的选择" itemprop="url">Go 语言方法接受者类型的选择</a>
+      <a href="/2014/07/14/implementation-a-pool-with-buffered-channel-in-golang/" title="使用 buffered channel 实现线程安全的 pool" itemprop="url">使用 buffered channel 实现线程安全的 pool</a>
   </h1>
   <p class="article-author">By
     
       <a href="https://plus.google.com//u/0/102193487255973478115?rel=author" title="Damon Zhao" target="_blank" itemprop="author">Damon Zhao</a>
     </p>
   <p class="article-time">
-    <time datetime="2014-05-04T00:00:00.000Z" itemprop="datePublished">5月 4 2014</time>
-    更新日期:<time datetime="2014-05-06T14:35:14.000Z" itemprop="dateModified">5月 6 2014</time>
+    <time datetime="2014-07-14T00:00:00.000Z" itemprop="datePublished">7月 14 2014</time>
+    更新日期:<time datetime="2014-07-16T07:47:14.000Z" itemprop="dateModified">7月 16 2014</time>
     
   </p>
 </header>
@@ -94,36 +122,83 @@
 		
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
-		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#概述"><span class="toc-number">1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#何时使用值类型"><span class="toc-number">2.</span> <span class="toc-text">何时使用值类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#何时使用指针类型"><span class="toc-number">3.</span> <span class="toc-text">何时使用指针类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#关于接受者的命名"><span class="toc-number">4.</span> <span class="toc-text">关于接受者的命名</span></a></li></ol>
+		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#概述"><span class="toc-number">1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#给我看代码"><span class="toc-number">2.</span> <span class="toc-text">给我看代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li></ol>
 		</div>
 		
 		<h2 id="概述">概述</h2>
-<p>很多人(特别是新手)在写 Go 语言代码时经常会问一个问题，那就是一个方法的接受者类型到底应该是值类型还是指针类型呢，Go 的 wiki 上对这点做了很好的解释，我来翻译一下。</p>
-<h2 id="何时使用值类型">何时使用值类型</h2>
-<ul>
-<li>如果接受者是一个 <code>map</code>，<code>func</code> 或者 <code>chan</code>，使用值类型(因为它们本身就是引用类型)。</li>
-<li>如果接受者是一个 <code>slice</code>，并且方法不执行 <code>reslice</code> 操作，也不重新分配内存给 <code>slice</code>，使用值类型。</li>
-<li>如果接受者是一个小的数组或者原生的值类型结构体类型(比如 <code>time.Time</code> 类型)，而且没有可修改的字段和指针，又或者接受者是一个简单地基本类型像是 <code>int</code> 和 <code>string</code>，使用值类型就好了。</li>
-</ul>
-<p>一个值类型的接受者可以减少一定数量的垃圾生成，如果一个值被传入一个值类型接受者的方法，一个栈上的拷贝会替代在堆上分配内存(但不是保证一定成功)，所以在没搞明白代码想干什么之前，别因为这个原因而选择值类型接受者。</p>
-<h2 id="何时使用指针类型">何时使用指针类型</h2>
-<ul>
-<li>如果方法需要修改接受者，接受者必须是指针类型。</li>
-<li>如果接受者是一个包含了 <code>sync.Mutex</code> 或者类似同步字段的结构体，接受者必须是指针，这样可以避免拷贝。</li>
-<li>如果接受者是一个大的结构体或者数组，那么指针类型接受者更有效率。(多大算大呢？假设把接受者的所有元素作为参数传给方法，如果你觉得参数有点多，那么它就是大)。</li>
-<li>从此方法中并发的调用函数和方法时，接受者可以被修改吗？一个值类型的接受者当方法调用时会创建一份拷贝，所以外部的修改不能作用到这个接受者上。如果修改必须被原始的接受者可见，那么接受者必须是指针类型。</li>
-<li>如果接受者是一个结构体，数组或者 <code>slice</code>，它们中任意一个元素是指针类型而且可能被修改，建议使用指针类型接受者，这样会增加程序的可读性</li>
-</ul>
-<p>当你看完这个还是有疑虑，还是不知道该使用哪种接受者，那么记住使用指针接受者。</p>
-<h2 id="关于接受者的命名">关于接受者的命名</h2>
-<p>社区约定的接受者命名是类型的一个或两个字母的缩写(像 <code>c</code> 或者 <code>cl</code> 对于 <code>Client</code>)。不要使用泛指的名字像是 <code>me</code>，<code>this</code> 或者 <code>self</code>，也不要使用过度描述的名字，最后，如果你在一个地方使用了 <code>c</code>，那么就不要在别的地方使用 <code>cl</code>。</p>
+<p>我们已经知道 Go 语言提供了 sync.Pool，但是做的不怎么好，所以有必要自己来实现一个 pool。</p>
+<h2 id="给我看代码">给我看代码</h2>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+</pre></td><td class="code"><pre><span class="keyword">type</span> Pool <span class="keyword">struct</span> {
+  pool <span class="keyword">chan</span> *Client
+}
+
+<span class="comment">// 创建一个新的 pool</span>
+<span class="keyword">func</span> NewPool(max <span class="typename">int</span>) *Pool {
+  <span class="keyword">return</span> &Pool{
+    pool: <span class="built_in">make</span>(<span class="keyword">chan</span> *Client, max),
+  }
+}
+
+<span class="comment">// 从 pool 里借一个 Client</span>
+<span class="keyword">func</span> (p *Pool) Borrow() *Client {
+  <span class="keyword">var</span> cl *Client
+  <span class="keyword">select</span> {
+  <span class="keyword">case</span> cl = &lt;-p.pool:
+  <span class="keyword">default</span>:
+    cl = newClient()
+  }
+  <span class="keyword">return</span> cl
+}
+
+<span class="comment">// 还回去</span>
+<span class="keyword">func</span> (p *Pool) Return(cl *Client) {
+  <span class="keyword">select</span> {
+  <span class="keyword">case</span> p.pool &lt;- c:
+  <span class="keyword">default</span>:
+    <span class="comment">// let it go, let it go...</span>
+  }
+}
+</pre></td></tr></table></figure>
+
+<h2 id="总结">总结</h2>
+<p>现在<strong><em>不要</em></strong>使用 <code>sync.Pool</code></p>
   
 	</div>
 		<footer class="article-footer clearfix">
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/golang/">golang</a>
+  <span></span> <a href="/tags/golang/">golang</a><a href="/tags/pool/">pool</a><a href="/tags/channel/">channel</a>
   </div>
 
 
@@ -136,7 +211,7 @@
 
 <div class="article-share" id="share">
 
-  <div data-url="http://se77en.cc/2014/05/04/choose-whether-to-use-a-value-or-pointer-receiver-on-methods/" data-title="Go 语言方法接受者类型的选择 | AriesDevil&#39;s Blog" data-tsina="3266027140" class="share clearfix">
+  <div data-url="http://se77en.cc/2014/07/14/implementation-a-pool-with-buffered-channel-in-golang/" data-title="使用 buffered channel 实现线程安全的 pool | AriesDevil&#39;s Blog" data-tsina="3266027140" class="share clearfix">
   </div>
 
 </div>
@@ -145,19 +220,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2014/05/05/methods-interfaces-and-embedded-types-in-golang/" title="Go 语言中的方法，接口和嵌入类型">
-  <strong>PREVIOUS:</strong><br/>
-  <span>
-  Go 语言中的方法，接口和嵌入类型</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2014/04/25/the-difference-between-function-new-and-make-in-golang/"  title="Go 语言中的 new() 和 make() 的区别">
+<a href="/2014/07/07/template-in-golang/"  title="Go 语言中的模板(Template)">
  <strong>NEXT:</strong><br/> 
- <span>Go 语言中的 new() 和 make() 的区别
+ <span>Go 语言中的模板(Template)
 </span>
 </a>
 </div>
@@ -174,7 +241,7 @@
 
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
-  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#概述"><span class="toc-number">1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#何时使用值类型"><span class="toc-number">2.</span> <span class="toc-text">何时使用值类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#何时使用指针类型"><span class="toc-number">3.</span> <span class="toc-text">何时使用指针类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#关于接受者的命名"><span class="toc-number">4.</span> <span class="toc-text">关于接受者的命名</span></a></li></ol>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#概述"><span class="toc-number">1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#给我看代码"><span class="toc-number">2.</span> <span class="toc-text">给我看代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li></ol>
   </div>
 
 <div id="asidepart">
